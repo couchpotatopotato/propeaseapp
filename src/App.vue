@@ -19,17 +19,12 @@ import { RouterLink, RouterView } from "vue-router";
   <RouterView />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
+<style>
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 20px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 50px;
 }
 
 nav a.router-link-exact-active {
@@ -42,7 +37,7 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0 1rem;
+  padding: 0 3rem;
   border-left: 1px solid var(--color-border);
 }
 
