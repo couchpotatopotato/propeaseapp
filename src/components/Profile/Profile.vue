@@ -1,5 +1,5 @@
 <template>
-  <div id="Profile">
+  <div class="card">
     <form>
       <label for="fullname">Full Name</label><br />
       <input type="text" id="fullname" name="fullname" /><br />
