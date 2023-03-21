@@ -39,6 +39,7 @@
   --color-bluehover: hsla(209, 100%, 37%, 0.097);
 }
 
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
@@ -57,6 +58,7 @@
     --color-bluehover: hsla(209, 100%, 37%, 0.236);
   }
 }
+*/
 
 *,
 *::before,

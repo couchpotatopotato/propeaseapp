@@ -22,14 +22,19 @@ a,
 
 body {
   display: flex;
+  background-image: url("backgroundimg.jpg");
+  background-size: 500px;
+  background-position: 80% 60%;
+  background-repeat: no-repeat;
 }
 
 .about {
-  margin-top: 30px;
+  margin-top: 10%;
   margin-bottom: 30px;
   display: flex;
   align-items: center;
   font-size: 30px;
+  min-height: 8rem;
 }
 
 .card {
@@ -60,4 +65,16 @@ body {
 .button:hover {
   background-color: var(--color-lightblue);
   color: white;
+}
+
+.button2 {
+  color: white;
+  background-color: var(--color-lightblue);
+  width: 200px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+}
+
+.button2:hover {
+  background-color: var(--color-bluehover);
 }

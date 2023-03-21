@@ -1,7 +1,21 @@
 <template>
   <div class="about">
-    <h1>Home</h1>
+    <h1>PropEase</h1>
   </div>
+  <HomeCenter />
 </template>
 
-<style></style>
+<style scoped>
+.about {
+  margin-top: 10em;
+}
+</style>
+
+<script>
+import HomeCenter from "../components/Home/HomeCenter.vue";
+export default {
+  components: {
+    HomeCenter,
+  },
+};
+</script>

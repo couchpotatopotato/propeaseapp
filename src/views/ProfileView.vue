@@ -2,7 +2,6 @@
   <div class="about">
     <h1>Profile</h1>
   </div>
-  <br />
   <ViewProfile @showEdit="showEditFunc($event)" v-if="showView" />
   <EditProfile @showView="showViewFunc($event)" v-if="showEdit" />
 </template>
