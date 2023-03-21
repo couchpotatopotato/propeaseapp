@@ -33,7 +33,10 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
-  --section-gap: 160px;
+  --color-lightblue: #39ace7;
+  --color-darkblue: #0784b5;
+
+  --color-bluehover: hsla(209, 100%, 37%, 0.097);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -47,6 +50,11 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    --color-lightblue: #39ace7;
+    --color-darkblue: #0784b5;
+
+    --color-bluehover: hsla(209, 100%, 37%, 0.236);
   }
 }
 
