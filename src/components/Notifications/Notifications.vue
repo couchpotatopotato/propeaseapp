@@ -1,7 +1,5 @@
 <template>
-    <h1 id="Current">Notifications</h1>
-
-    <table id="table">
+   <table id="table">
         <tr>
             <th>Address</th>
             <th>Tenant</th>
