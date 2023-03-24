@@ -9,7 +9,7 @@
   <br />
   <br />
   <div class="flexcontainer">
-    <RouterLink to="/property">
+    <RouterLink to="/property"> 
       <button class="button button2">Property</button>
     </RouterLink>
     <RouterLink to="/dashboard">
