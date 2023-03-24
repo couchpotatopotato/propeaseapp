@@ -17,6 +17,12 @@
             <th>Actions</th>
         </tr>
     </table> <br><br>
+
+    <div class="flexcontainer">
+        <RouterLink to="/approvepayment">
+            <button class="button button2">Approve Payment</button>
+        </RouterLink>
+    </div>
 </template>
 
 <script>
