@@ -9,10 +9,10 @@
   <br />
   <br />
   <div class="flexcontainer">
-    <RouterLink to="/property">
+    <RouterLink to="/addcontract">
       <button class="button button2">Property</button>
     </RouterLink>
-    <RouterLink to="/dashboard">
+    <RouterLink to="/addproperty">
       <button class="button button2">Dashboard</button>
     </RouterLink>
   </div>
