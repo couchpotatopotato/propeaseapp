@@ -17,7 +17,6 @@
 
 <style scoped>
 .card {
-  padding: 8%;
   font-size: 1.7em;
 }
 </style>

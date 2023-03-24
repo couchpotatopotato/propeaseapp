@@ -7,7 +7,12 @@
 
 <style scoped>
 .about {
-  margin-top: 10em;
+  margin-top: 25%;
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: 500;
 }
 </style>
 

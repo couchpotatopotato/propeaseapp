@@ -1,15 +1,12 @@
 <template>
-  <div>
-    <h2 style="margin-bottom: 10px">5 Reminders</h2>
+  <div style="margin-bottom: 30px">
+    <h2 style="margin-bottom: 10px">5 Notifications</h2>
     <RouterLink to="/notif">
       <button class="button">View</button>
     </RouterLink>
   </div>
-  <br />
-  <br />
-  <br />
   <div class="flexcontainer">
-    <RouterLink to="/property"> 
+    <RouterLink to="/property">
       <button class="button button2">Property</button>
     </RouterLink>
     <RouterLink to="/dashboard">
@@ -22,7 +19,7 @@
 .flexcontainer {
   display: flex;
   justify-content: flex-start;
-  gap: 4rem;
+  gap: 2rem;
 }
 .card {
   width: 50%;

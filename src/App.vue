@@ -4,27 +4,35 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/notif">Notification</RouterLink>
-        <RouterLink to="/property">Property</RouterLink>
-        <RouterLink to="/dashboard">Dashboard</RouterLink>
-        <RouterLink to="/profile">Profile</RouterLink>
-      </nav>
-    </div>
+    <nav>
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/notif">Notification</RouterLink>
+      <RouterLink to="/property">Property</RouterLink>
+      <RouterLink to="/dashboard">Dashboard</RouterLink>
+      <RouterLink to="/profile">Profile</RouterLink>
+    </nav>
   </header>
   <br />
 
   <RouterView />
 </template>
 
-<style>
+<style scoped>
+header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1;
+  padding: 30px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+}
+
 nav {
   width: 100%;
   font-size: 20px;
   text-align: center;
-  margin-top: 50px;
 }
 
 nav a.router-link-exact-active {
