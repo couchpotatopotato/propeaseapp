@@ -2,40 +2,169 @@
     <div class="card">
         <div id="Prop" class="card2">
             <img id="img1" src="src/components/Property/AddPropImg.jpeg" alt="Card Image">
-            <span>Temp Address</span>
+            <span id="inputAddress">Address</span>
         </div>
 
         <div id="PayAmt" class="card2">
             <span class="field">Payment Amount</span> <br>
-            <span class="info">$4000</span>
+            <span id="inputPayAmt" class="info">PaymentAmount</span>
         </div>
 
         <div id="PayDate" class="card2">
             <span class="field">Payment Date</span> <br>
-            <span class="info">25/03/2023</span>
+            <span id="inputPayDate" class="info">PaymentDate</span>
         </div>
 
         <div id="PayMode" class="card2">
             <span class="field">Payment Mode</span> <br>
-            <span class="info">PayLah!</span>
+            <span id="inputPayMode" class="info">PaymentMode</span>
         </div>
 
         <div id="Tenant" class="card2">
             <span class="field">Tenant</span> <br>
-            <span class="info">Name</span> <br>
-            <span class="field"> email </span> <br>
-            <span class="field"> phone </span>
+            <span id="tenantName" class="info">Name</span> <br>
+            <span id="tenantEmail" class="field">Email</span> <br>
+            <span id="tenantPhone" class="field">Phone</span>
         </div>
 
         <div id="Approve">
-                <button class="button button2">Approve</button>
+                <button id="approvebtn" class="button button2" v-on:click="approve">Approve</button>
         </div>
 
         <div id="Reject">
-                <button class="button button2">Reject</button>
+                <button id="rejectbtn" class="button" v-on:click="reject">Reject</button>
         </div>
     </div>
 </template>
+
+
+<script>
+import firebaseApp from '@/firebase.js';
+import{ getFirestore } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
+const db = getFirestore(firebaseApp);
+const paymentID = "cDqgxaHQNX1yeVxFtRb9"; //to be edited
+
+export default {
+    mounted() {
+        async function display() {
+            // get payment data
+            let paymentRef = doc(db, "Payment", paymentID);
+            let paymentSnap = await getDoc(paymentRef);
+            if (paymentSnap.exists()) {
+                console.log("Payment Document data:", paymentSnap.data());
+            } else {
+                // paymentSnap.data() will be undefined in this case
+                console.log("No such document!");
+            }
+            let paymentData = paymentSnap.data();
+
+            // get contract data
+            let contractID = paymentData.ContractID;
+            console.log("contractID:", contractID);
+            let contractRef = doc(db, "Contract", contractID);
+            let contractSnap = await getDoc(contractRef);
+            if (contractSnap.exists()) {
+                console.log("Contract Document data:", contractSnap.data());
+            } else {
+                // contractSnap.data() will be undefined in this case
+                console.log("No such document!");
+            }
+            let contractData = contractSnap.data();
+
+            // get property data
+            let propertyID = contractData.PropertyID;
+            let propertyRef = doc(db, "Property", propertyID);
+            let propertySnap = await getDoc(propertyRef);
+            if (propertySnap.exists()) {
+                console.log("Property Document data:", propertySnap.data());
+            } else {
+                // propertySnap.data() will be undefined in this case
+                console.log("No such document!");
+            }
+            let propertyData = propertySnap.data();
+
+            // get tenant data
+            let tenantID = contractData.TenantID;
+            let tenantRef = doc(db, "Tenant", tenantID);
+            let tenantSnap = await getDoc(tenantRef);
+            if (tenantSnap.exists()) {
+                console.log("Tenant Document data:", tenantSnap.data());
+            } else {
+                // tenantSnap.data() will be undefined in this case
+                console.log("No such document!");
+            }
+            let tenantData = tenantSnap.data();
+            
+            //
+            document.getElementById("inputAddress").innerHTML = propertyData.Address;
+            document.getElementById("inputPayAmt").innerHTML = contractData.RentalCost;
+            document.getElementById("inputPayDate").innerHTML = paymentData.Date.toDate().toLocaleDateString();
+            document.getElementById("inputPayMode").innerHTML = paymentData.Mode;
+            document.getElementById("tenantName").innerHTML = tenantData.Name;
+            document.getElementById("tenantEmail").innerHTML = tenantData.Email; 
+            document.getElementById("tenantPhone").innerHTML = tenantData.Phone;
+        }
+        display();
+
+    },
+
+    methods: {
+        async approve() {
+            // to update payment status to "Paid"
+            alert("Approving Payment Claim");
+            try{
+                const paymentDocRef = doc(db, "Payment", paymentID);
+                await updateDoc(paymentDocRef, {
+                    "Status": "Paid"
+                });
+                this.$emit("approved");
+            }
+            catch(error) {
+                console.error("Error executing approval", error)
+            }
+        },
+
+        async reject() {
+            // to update payment status to "Paid"
+            alert("Rejecting Payment Claim");
+            try{
+                const paymentDocRef = doc(db, "Payment", paymentID);
+                const paymentSnap = await getDoc(paymentDocRef);
+                const paymentData = paymentSnap.data();
+                const dueDate = paymentData.dueDate.toDate().toLocaleDateString();
+                console.log("Payment Date:", dueDate)
+
+                Date.prototype.today = function () { 
+                    return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth()+1) < 10)?"0":"") 
+                            + (this.getMonth()+1) +"/"+ this.getFullYear();
+                }
+                const currDate = new Date().today();
+                console.log("Current Date: ", currDate)
+                let newStatus = paymentData.Status;
+                if (currDate <= dueDate) {
+                    newStatus = "Unpaid";
+                } else {
+                    newStatus = "Overdue";
+                }
+                console.log(paymentData)
+
+                await updateDoc(paymentDocRef, {
+                    "Status": newStatus
+                });
+
+                this.$emit("rejected");
+            }
+            catch(error) {
+                console.error("Error executing rejection", error)
+            }
+        }
+    }
+    
+}
+</script>
+
 
 <style scoped>
 .card {
@@ -106,5 +235,16 @@ span {
 
 .button2 {
     width: 100%;
+}
+
+#rejectbtn {
+  color: white;
+  background-color: #ff3333;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 1.2rem;
+}
+#rejectbtn:hover {
+  background-color: rgb(255, 230, 230);
 }
 </style>
