@@ -18,7 +18,7 @@ a,
     background-color: var(--color-bluehover);
   }
 }
-
+/*
 body {
   display: flex;
   background-image: url("backgroundimg.jpg");
@@ -27,6 +27,7 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+*/
 
 .about {
   margin-top: 5%;

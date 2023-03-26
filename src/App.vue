@@ -4,13 +4,15 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <header>
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/notif">Notification</RouterLink>
-      <RouterLink to="/property">Property</RouterLink>
-      <RouterLink to="/dashboard">Dashboard</RouterLink>
-      <RouterLink to="/profile">Profile</RouterLink>
-    </nav>
+    <div class="wrapper" v-show="false"> <!-- hide when not login: -->
+      <nav>
+        <RouterLink to="/home">Home</RouterLink>
+        <RouterLink to="/notif">Notification</RouterLink>
+        <RouterLink to="/property">Property</RouterLink>
+        <RouterLink to="/dashboard">Dashboard</RouterLink>
+        <RouterLink to="/profile">Profile</RouterLink>
+      </nav>
+    </div>
   </header>
   <br />
 

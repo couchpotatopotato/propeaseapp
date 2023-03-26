@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import LandingView from "../views/LandingView.vue";
 import HomeView from "../views/HomeView.vue";
 
 const router = createRouter({
@@ -6,6 +7,27 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "landing",
+      component: LandingView,
+    },
+    {
+      path: "/login",
+      name: "login",
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import("../components/User/Login.vue"),
+    },
+    {
+      path: "/regist",
+      name: "regist",
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import("../components/User/Registration.vue"),
+    },
+    {
+      path: "/home",
       name: "home",
       component: HomeView,
     },
