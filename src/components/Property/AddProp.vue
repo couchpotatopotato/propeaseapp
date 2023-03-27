@@ -69,8 +69,8 @@ button {
 import firebaseApp from '@/firebase.js';
 import{ collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
-import ToastPlugin from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+// import ToastPlugin from 'vue-toast-notification';
+// import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 const db = getFirestore(firebaseApp);
 
@@ -89,11 +89,11 @@ export default {
     };
   },
   methods: {
-    mounted() {
-      this.$toast = ToastPlugin;
-      this.$toast.open('Component mounted!');
-      // Vue.use(ToastPlugin);
-    },
+    // mounted() {
+    //   this.$toast = ToastPlugin;
+    //   this.$toast.open('Component mounted!');
+    //   // Vue.use(ToastPlugin);
+    // },
     validateEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
@@ -113,7 +113,7 @@ export default {
       } else {
         console.log("fail")
         // email is not valid, show error message
-        this.$toast.error('Invalid email address');
+        // this.$toast.error('Invalid email address');
       }
     },
   },
