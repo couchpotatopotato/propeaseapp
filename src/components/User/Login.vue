@@ -1,15 +1,13 @@
 <script>
 import firebaseApp from '@/firebase.js';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 export default {
     data() {
         return {
-            user: {
-                name: '',
-                email: '',
-                password: '',
-            }
+            email: '',
+            password: '',
+            userType: '',
         };
     },
     emits: [
@@ -25,13 +23,21 @@ export default {
         },
         userLogin() {
             const auth = getAuth();
+            signInWithEmailAndPassword(auth, this.email, this.password)
+                .then(() => {
+                    this.$router.push({ name: 'home' })
+                })
+                .catch((error) => {
+                    alert(error.message);
+                })
+
             this.user.email = auth.currentUser.email;
         }
     },
     created() {
         var scripts = [
+            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js",
             "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
         ];
         scripts.forEach(script => {
             let tag = document.createElement("script");
@@ -48,15 +54,15 @@ export default {
     
         <div class="form-group">
             <label for="email">Email</label>
-            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Email">
+            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Email" required v-model="email">
         </div>
         <div class="form-group">
             <label for="pw">Password</label>
-            <input class="form-control" type="password" id="pw" name="pw" placeholder="Enter your Password">
+            <input class="form-control" type="password" id="pw" name="pw" placeholder="Enter your Password" required v-model="password">
         </div>
         <div class="form-group">
             <label for="userType">User Type</label>
-            <select class="form-control" id="userType">
+            <select class="form-control" id="userType" required v-model="userType">
                 <option value="Owner" id="owner">Owner</option>
                 <option value="Tenant" id="tenant">Tenant</option>
             </select>

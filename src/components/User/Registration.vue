@@ -1,8 +1,7 @@
 <script>
 import firebaseApp from '@/firebase.js';
-import { getFirestore, collection, setDoc } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-
+import { getFirestore, setDoc, doc } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default {
     data() {
@@ -22,28 +21,26 @@ export default {
         userRegistration() {
             const auth = getAuth();
             createUserWithEmailAndPassword(auth, this.email, this.password)
-                .then((cred) => {
+                .then(() => {
                     const db = getFirestore(firebaseApp);
-                    return setDoc(doc(db, String(this.userType), this.email), {
+                    setDoc(doc(db, String(this.userType), this.email), {
                         Name: this.fullname,
                         Phone: this.contactNo,
                         Email: this.email,
                     });
                 })
-                /*.then(() => {
-                const db = getFirestore(firebaseApp);
-                setDoc(doc(db, this.userType, this.email), {
-                    Name: this.fullname,
-                    Phone: this.contactNo,
-                    Email: this.email,
+                .then(() => {
+                    this.$router.push({ name: 'home'})
                 })
-            }) */
+                .catch((error) => {
+                    alert(error.message);
+                })
         }
     },
     created() {
         var scripts = [
+            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js",
             "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
         ];
         scripts.forEach(script => {
             let tag = document.createElement("script");
