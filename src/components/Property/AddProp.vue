@@ -14,7 +14,7 @@
     </div>
   </div>
 </template>
-
+  0--
 <style scoped>
 .card {
   border: 1px solid #ccc;
@@ -88,11 +88,7 @@ export default {
     };
   },
   methods: {
-    // mounted() {
-    //   this.$toast = ToastPlugin;
-    //   this.$toast.open('Component mounted!');
-    //   // Vue.use(ToastPlugin);
-    // },
+    
     validateEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
