@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     validateEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
       return emailRegex.test(email);
     },
     saveCard() {
@@ -113,6 +113,8 @@ export default {
         console.log(card.id);
       // } else if (this.$toast) {
       //   this.$toast.error('Invalid email address');
+      } else if (this.prop_name == "" || this.prop_address == "" || this.owner_email == "") {
+        this.$toast.error('Unfilled Fields!');
       } else {
         console.log("fail")
         // email is not valid, show error message

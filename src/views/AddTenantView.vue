@@ -1,17 +1,17 @@
 <template>
     <div class="about">
-      <h1>Add Contract</h1>
+      <h1>Add Tenant</h1>
     </div>
-    <AddContract />
+    <AddTenant />
   </template>
   
   <style></style>
   
   <script>
-  import AddContract from "../components/Property/AddContract.vue";
+  import AddTenant from "../components/Property/AddTenant.vue";
   export default {
     components: {
-      AddContract,
+      AddTenant,
     },
   };
   </script>
