@@ -1,5 +1,6 @@
 <script>
 import firebaseApp from '@/firebase.js';
+import { getFirestore, getDoc, doc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 export default {
@@ -22,16 +23,35 @@ export default {
             this.$emit("showResetPW", true);
         },
         userLogin() {
-            const auth = getAuth();
-            signInWithEmailAndPassword(auth, this.email, this.password)
-                .then(() => {
-                    this.$router.push({ name: 'home' })
-                })
-                .catch((error) => {
-                    alert(error.message);
-                })
-
-            this.user.email = auth.currentUser.email;
+            // check if the user is under the specified UserType collection
+            const db = getFirestore(firebaseApp);
+            const docRef = doc(db, String(this.userType), this.email);
+            getDoc(docRef)
+            .then((doc) => {
+                if (doc.exists()) {
+                    // continue to sign in
+                    const auth = getAuth();
+                    signInWithEmailAndPassword(auth, this.email, this.password)
+                        .then(() => {
+                            this.$router.push({ name: 'home' })
+                        })
+                        .catch((error) => {
+                            const errorCode = error.code;
+                            if (errorCode === "auth/user-not-found") {
+                                alert("User not found in system.");
+                            } else if (errorCode === "auth/wrong-password") {
+                                alert("Wrong password provided.");
+                            } else {
+                                alert(error.message);
+                            }
+                        });
+                } else {
+                    alert("This email has not been registered as " + this.userType);
+                }
+            })
+            .catch((error) => {
+                console.log("Error getting document:", error);
+            });
         }
     },
     created() {
