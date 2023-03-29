@@ -18,6 +18,8 @@ export default {
         showLogin() {
             this.$emit("showLogin", true);
         },
+        // check contact number format, valid email format or pin to see if exist?, password requirement
+        //
         userRegistration() {
             const auth = getAuth();
             createUserWithEmailAndPassword(auth, this.email, this.password)
@@ -33,7 +35,14 @@ export default {
                     this.$router.push({ name: 'home'})
                 })
                 .catch((error) => {
-                    alert(error.message);
+                    const errorCode = error.code;
+                    if (errorCode === "auth/email-already-in-use") {
+                        alert("Email already in use.");
+                    } else if (errorCode === "auth/weak-password") {
+                        alert("The password is too weak. Please provide a stronger password with at least 6 characters.");
+                    } else {
+                        alert(error.message);
+                    }
                 })
         }
     },
