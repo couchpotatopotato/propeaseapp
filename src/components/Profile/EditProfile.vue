@@ -6,17 +6,11 @@
         type="text"
         id="fullname"
         name="fullname"
-        value="default value"
+        :value="fullname"
       /><br />
 
       <label for="contact">Contact Number</label><br />
-      <input type="text" id="contact" name="contact" /><br />
-
-      <label for="email">Email</label><br />
-      <input type="text" id="email" name="email" /><br />
-
-      <label for="password">Password</label><br />
-      <input type="text" id="password" name="password" /><br />
+      <input type="text" id="contact" name="contact" :value="number" /><br />
     </form>
     <br />
     <button class="button" @click="showView">BACK</button>
@@ -44,8 +38,8 @@ input[type="text"] {
 </style>
 
 <script>
-import firebaseApp from "../firebase.js";
-import { getFirestore } from "firebase/firestore";
+import firebaseApp from "@/firebase.js";
+import { getDoc, getFirestore } from "firebase/firestore";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -54,9 +48,8 @@ const db = getFirestore(firebaseApp);
 export default {
   data() {
     return {
-      useremail: "",
-      tableRows: [],
-      totalProfit: 0,
+      fullname: "",
+      number: "",
     };
   },
   async mounted() {
@@ -69,6 +62,13 @@ export default {
   methods: {
     showView() {
       this.$emit("showView", true);
+    },
+
+    async fetchAndUpdateData(useremail) {
+      const info = await getDoc(doc(db, "Owner", String(useremail)));
+      const data = info.data();
+      this.fullname = data["Name"];
+      this.number = data["Phone"];
     },
   },
 };
