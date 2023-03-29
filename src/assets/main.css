@@ -75,5 +75,5 @@ body {
 }
 
 .button2:hover {
-  background-color: var(--color-bluehover);
+  background-color: rgb(19, 33, 63);
 }

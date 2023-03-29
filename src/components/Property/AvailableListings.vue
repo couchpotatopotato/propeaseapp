@@ -1,20 +1,24 @@
 <template>
   <div>
     <h2>Available Listings</h2>
-    <colgroup>
-      <col span="1" style="width: 80%" />
-      <col span="1" style="width: 15%" />
-      <col span="1" style="width: 15%" />
-    </colgroup>
+    <br />
     <table>
       <tr>
+        <th>Name</th>
         <th>Address</th>
-        <th>View</th>
-        <th>Delete</th>
+        <th>Action</th>
       </tr>
+
+      <!-- only render the td when the email matches the current user -->
       <tr v-for="row in tableRows" :key="row.owner_email">
-        <td>{{ row.prop_address }}</td>
-        <td>{{ row.prop_name }}</td>
+        <td v-if="row.owner_email === useremail">{{ row.prop_name }}</td>
+        <td v-if="row.owner_email === useremail">{{ row.prop_address }}</td>
+        <td v-if="row.owner_email === useremail">
+          <div id="flexbutt">
+            <button class="button2">View</button>
+            <button class="button2">Delete</button>
+          </div>
+        </td>
       </tr>
     </table>
   </div>
@@ -31,20 +35,21 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
 export default {
   data() {
     return {
       tableRows: [],
+      useremail: "",
     };
   },
 
   async mounted() {
     const auth = getAuth();
     this.useremail = auth.currentUser.email;
-    console.log(this.useremail);
+
     await this.fetchAndUpdateData(this.useremail);
   },
 
@@ -63,6 +68,7 @@ export default {
           let owner_email = documentData.owner_email;
           let prop_address = documentData.prop_address;
           let prop_name = documentData.prop_name;
+
           return {
             isRented,
             owner_email,
@@ -96,7 +102,23 @@ th {
 td,
 th {
   text-align: left;
-  padding: 2px 15px 2px 15px;
+  padding: 2px 50px 2px 50px;
   line-height: 50px;
+}
+
+.button2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+}
+
+#flexbutt {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
 }
 </style>
