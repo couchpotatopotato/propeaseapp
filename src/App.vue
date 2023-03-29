@@ -3,11 +3,11 @@ import { RouterLink, RouterView } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
       user: false,
-    }
+    };
   },
   mounted() {
     const auth = getAuth();
@@ -15,7 +15,7 @@ export default {
       if (user) {
         this.user = user;
       }
-    })
+    });
   },
   methods: {
     signOut() {
@@ -23,22 +23,23 @@ export default {
       const user = auth.currentUser;
       signOut(auth, user);
       this.user = false;
-      this.$router.push({ name: 'landing' });
-    }
-  }
-}
+      this.$router.push({ name: "landing" });
+    },
+  },
+};
 </script>
 
 <template>
-  <header v-if="user"> <!-- hide when not login -->
-      <nav> 
-        <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/notif">Notification</RouterLink>
-        <RouterLink to="/property">Property</RouterLink>
-        <RouterLink to="/dashboard">Dashboard</RouterLink>
-        <RouterLink to="/profile">Profile</RouterLink>
-        <button id="logoutBtn" @click="signOut()">Logout</button>
-      </nav>
+  <header v-if="user">
+    <!-- hide when not login -->
+    <nav>
+      <RouterLink to="/home">Home</RouterLink>
+      <RouterLink to="/notif">Notification</RouterLink>
+      <RouterLink to="/property">Property</RouterLink>
+      <RouterLink to="/dashboard">Dashboard</RouterLink>
+      <RouterLink to="/profile">Profile</RouterLink>
+      <button id="logoutBtn" @click="signOut()">Logout</button>
+    </nav>
   </header>
   <br />
 
@@ -49,7 +50,6 @@ export default {
 header {
   position: sticky;
   top: 0;
-  width: 100%;
   background-color: white;
   z-index: 1;
   padding: 30px;
@@ -58,7 +58,6 @@ header {
 }
 
 nav {
-  width: 100%;
   font-size: 20px;
   text-align: center;
 }
@@ -73,13 +72,13 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0 3rem;
+  padding: 0 3%;
   border-left: 1px solid var(--color-border);
 }
 
 nav button {
   display: inline-block;
-  padding: 0 3rem;
+  padding: 0 3%;
   border: none;
   border-left: 1px solid var(--color-border);
   background: none;

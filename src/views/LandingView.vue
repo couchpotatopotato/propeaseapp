@@ -4,72 +4,73 @@ import Registration from "../components/User/Registration.vue";
 import ForgetPW from "../components/User/ForgetPW.vue";
 
 export default {
-    data() {
-        let showRegist;
-        let showLogin = true;
-        let showResetPW;
+  data() {
+    let showRegist;
+    let showLogin = true;
+    let showResetPW;
 
-        return {
-            showRegist,
-            showLogin,
-            showResetPW,
-        };
+    return {
+      showRegist,
+      showLogin,
+      showResetPW,
+    };
+  },
+  components: {
+    Login,
+    Registration,
+    ForgetPW,
+  },
+  methods: {
+    showRegistFunc(value) {
+      this.showRegist = true;
+      this.showLogin = false;
+      this.showResetPW = false;
     },
-    components: {
-        Login,
-        Registration,
-        ForgetPW,
-    },
-    methods: {
-        showRegistFunc(value) {
-            this.showRegist = true;
-            this.showLogin = false;
-            this.showResetPW = false;
-        },
 
-        showLoginFunc(value) {
-            this.showRegist = false;
-            this.showLogin = true;
-            this.showResetPW = false;
-        },
+    showLoginFunc(value) {
+      this.showRegist = false;
+      this.showLogin = true;
+      this.showResetPW = false;
+    },
 
-        showResetPWFunc(value) {
-            this.showRegist = false;
-            this.showLogin = false;
-            this.showResetPW = true;
-        }
+    showResetPWFunc(value) {
+      this.showRegist = false;
+      this.showLogin = false;
+      this.showResetPW = true;
     },
-    created() {
-        var scripts = [
-            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js",
-            "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js",
-        ];
-        scripts.forEach(script => {
-            let tag = document.createElement("script");
-            tag.setAttribute("src", script);
-            document.head.appendChild(tag);
-        });
-    },
+  },
+  created() {
+    var scripts = [
+      "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js",
+      "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js",
+    ];
+    scripts.forEach((script) => {
+      let tag = document.createElement("script");
+      tag.setAttribute("src", script);
+      document.head.appendChild(tag);
+    });
+  },
 };
 </script>
 
-
 <template>
-    <div class="register-photo">
-        <div class="form-container">
-            <div class="image-holder"></div>
-            
-            <Login @showRegist="showRegistFunc($event)" v-if="showLogin" @showResetPW="showResetPWFunc($event)"/>
-            <Registration @showLogin="showLoginFunc($event)" v-if="showRegist"/>
-            <ForgetPW @showLogin="showLoginFunc($event)" v-if="showResetPW"/>
-        </div>
-    </div>
+  <div class="register-photo">
+    <div class="form-container">
+      <div class="image-holder"></div>
 
+      <Login
+        @showRegist="showRegistFunc($event)"
+        v-if="showLogin"
+        @showResetPW="showResetPWFunc($event)"
+      />
+      <Registration @showLogin="showLoginFunc($event)" v-if="showRegist" />
+      <ForgetPW @showLogin="showLoginFunc($event)" v-if="showResetPW" />
+    </div>
+  </div>
 </template>
 
-
 <style scoped>
-@import 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+@import "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css";
 
 .register-photo {
   background: #f1f7fc;
@@ -88,7 +89,6 @@ export default {
   max-width: 1000px;
   width: 90%;
   margin: 0 auto;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
-
 </style>

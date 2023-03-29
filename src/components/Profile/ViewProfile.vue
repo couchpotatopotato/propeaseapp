@@ -19,6 +19,10 @@
 .card {
   font-size: 1.7em;
 }
+
+.button {
+  font-size: 1rem;
+}
 </style>
 
 <script>

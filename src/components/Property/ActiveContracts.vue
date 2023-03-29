@@ -27,8 +27,8 @@ h2 {
 
 table {
   border-radius: 15px;
+  width: 100%;
   border: solid var(--color-border);
-  width: 120%;
   background-color: var(--color-background);
 }
 

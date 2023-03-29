@@ -65,9 +65,8 @@ button {
 </style>
 
 <script>
-
-import firebaseApp from '@/firebase.js';
-import{ collection, getFirestore } from "firebase/firestore";
+import firebaseApp from "@/firebase.js";
+import { collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
 // import ToastPlugin from 'vue-toast-notification';
 // import 'vue-toast-notification/dist/theme-bootstrap.css';
@@ -85,7 +84,7 @@ export default {
     return {
       prop_name: "",
       prop_address: "",
-      owner_email: ""
+      owner_email: "",
     };
   },
   methods: {
@@ -105,13 +104,13 @@ export default {
           prop_name: this.prop_name,
           prop_address: this.prop_address,
           isRented: true,
-          owner_email: this.owner_email
+          owner_email: this.owner_email,
         });
         console.log(card.id);
-      // } else if (this.$toast) {
-      //   this.$toast.error('Invalid email address');
+        // } else if (this.$toast) {
+        //   this.$toast.error('Invalid email address');
       } else {
-        console.log("fail")
+        console.log("fail");
         // email is not valid, show error message
         // this.$toast.error('Invalid email address');
       }

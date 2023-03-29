@@ -32,7 +32,7 @@
 table {
   border-radius: 15px;
   border: solid var(--color-border);
-  width: 120%;
+  /* width: 120%; */
   background-color: var(--color-background);
 }
 
