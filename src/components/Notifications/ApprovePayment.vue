@@ -107,7 +107,6 @@ export default {
             document.getElementById("tenantPhone").innerHTML = tenantData.Phone;
         }
         display();
-
     },
 
     methods: {

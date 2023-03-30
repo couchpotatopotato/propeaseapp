@@ -1,8 +1,7 @@
 @import "./base.css";
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
+  margin: 0 100px 100px 100px;
   font-weight: normal;
 }
 
@@ -18,16 +17,15 @@ a,
     background-color: var(--color-bluehover);
   }
 }
-/*
+
 body {
-  display: flex;
+  /* display: flex; */
   background-image: url("backgroundimg.jpg");
-  background-size: 500px;
-  background-position: 80% 60%;
+  background-size: 400px;
+  background-position: 80% 50%;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-*/
 
 .about {
   margin-top: 5%;
@@ -45,7 +43,7 @@ body {
   transition: 0.3s;
   border-radius: 5px; /* 5px rounded corners */
   background-color: var(--color-background);
-  padding: 5%;
+  padding: 3%;
 }
 
 .card:hover {

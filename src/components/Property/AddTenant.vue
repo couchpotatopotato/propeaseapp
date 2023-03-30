@@ -120,7 +120,7 @@
         return emailRegex.test(email);
       },
       saveCard() {
-        if (this.validateEmail(this.owner_email)) {
+        if (this.validateEmail(this.tenant_email)) {
           // email is valid, do something
           const card = addDoc(collection(db, "Property"), {
             tenant_email: this.tenant_email,

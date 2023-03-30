@@ -14,7 +14,7 @@
     </div>
   </div>
 </template>
-
+  0--
 <style scoped>
 .card {
   border: 1px solid #ccc;
@@ -65,9 +65,8 @@ button {
 </style>
 
 <script>
-
-import firebaseApp from '@/firebase.js';
-import{ collection, getFirestore } from "firebase/firestore";
+import firebaseApp from "@/firebase.js";
+import { collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
 import {useToast} from 'vue-toast-notification';
 // import VueToast from 'vue-toast-notification';
@@ -86,7 +85,7 @@ export default {
     return {
       prop_name: "",
       prop_address: "",
-      owner_email: ""
+      owner_email: "",
     };
   },
   mounted() {
@@ -108,7 +107,7 @@ export default {
           prop_name: this.prop_name,
           prop_address: this.prop_address,
           isRented: true,
-          owner_email: this.owner_email
+          owner_email: this.owner_email,
         });
         console.log(card.id);
       // } else if (this.$toast) {
@@ -116,7 +115,7 @@ export default {
       } else if (this.prop_name == "" || this.prop_address == "" || this.owner_email == "") {
         this.$toast.error('Unfilled Fields!');
       } else {
-        console.log("fail")
+        console.log("fail");
         // email is not valid, show error message
         this.$toast.error('Invalid email address');
       }
