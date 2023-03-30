@@ -28,7 +28,7 @@
 }
 
 #maincontainer {
-  margin-left: 20%;
+  margin-left: 15%;
 }
 </style>
 

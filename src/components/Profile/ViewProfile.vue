@@ -16,6 +16,7 @@
 <style scoped>
 .card {
   font-size: 1.7em;
+  width: 50%;
 }
 
 .button {
@@ -27,7 +28,11 @@
 import firebaseApp from "@/firebase.js";
 import { getDoc, getFirestore } from "firebase/firestore";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 
 const db = getFirestore(firebaseApp);
 
@@ -39,6 +44,7 @@ export default {
       email: "",
     };
   },
+
   async mounted() {
     const auth = getAuth();
     this.useremail = auth.currentUser.email;
