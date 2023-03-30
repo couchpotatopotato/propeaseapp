@@ -15,7 +15,7 @@
     <br />
     <button class="button" @click="showView">BACK</button>
 
-    <button class="button">SUBMIT</button>
+    <button class="button" @click="writeUserData()">SUBMIT</button>
   </div>
 </template>
 
@@ -39,8 +39,7 @@ input[type="text"] {
 
 <script>
 import firebaseApp from "@/firebase.js";
-import { getDoc, getFirestore } from "firebase/firestore";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getDoc, getFirestore, doc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const db = getFirestore(firebaseApp);
@@ -50,6 +49,7 @@ export default {
     return {
       fullname: "",
       number: "",
+      useremail: "",
     };
   },
   async mounted() {
@@ -65,10 +65,29 @@ export default {
     },
 
     async fetchAndUpdateData(useremail) {
-      const info = await getDoc(doc(db, "Owner", String(useremail)));
+      const info = await getDoc(doc(db, "Owner", String(this.useremail)));
       const data = info.data();
       this.fullname = data["Name"];
       this.number = data["Phone"];
+    },
+
+    writeUserData() {
+      let name = document.getElementById("fullname").value;
+      let contact = document.getElementById("contact").value;
+      console.log(contact);
+
+      const docRef = doc(db, "Owners", this.useremail);
+      const data = {
+        Name: name,
+        Contact: contact,
+      };
+      setDoc(docRef, data)
+        .then((docRef) => {
+          console.log("Entire Document has been updated successfully");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
