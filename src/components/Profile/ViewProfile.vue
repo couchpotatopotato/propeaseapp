@@ -16,6 +16,7 @@
 <style scoped>
 .card {
   font-size: 1.7em;
+  width: 50%;
 }
 
 .button {
