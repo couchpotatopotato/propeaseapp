@@ -39,7 +39,7 @@ input[type="text"] {
 
 <script>
 import firebaseApp from "@/firebase.js";
-import { getDoc, getFirestore, doc, setDoc } from "firebase/firestore";
+import { getDoc, getFirestore, doc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const db = getFirestore(firebaseApp);
@@ -73,17 +73,17 @@ export default {
 
     writeUserData() {
       let name = document.getElementById("fullname").value;
-      let contact = document.getElementById("contact").value;
-      console.log(contact);
+      let phone = document.getElementById("contact").value;
 
-      const docRef = doc(db, "Owners", this.useremail);
+      const docRef = doc(db, "Owner", this.useremail);
       const data = {
         Name: name,
-        Contact: contact,
+        Phone: phone,
       };
-      setDoc(docRef, data)
+
+      updateDoc(docRef, data)
         .then((docRef) => {
-          console.log("Entire Document has been updated successfully");
+          alert("Details updated successfully!");
         })
         .catch((error) => {
           console.log(error);
