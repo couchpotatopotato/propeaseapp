@@ -37,9 +37,6 @@ input[type="text"] {
   margin: 0 0 20px 0;
   font-size: 15px;
 }
-
-.flexcontainer {
-}
 </style>
 
 <script>
