@@ -17,11 +17,11 @@
         <th>Action</th>
       </tr>
       <tr v-for="row in tableRows" :key="row.prop_address">
-        <td v-if="row.owner_email === useremail">{{ row.prop_address }}</td>
-        <td v-if="row.owner_email === useremail">{{ row.tenant_name }}</td>
-        <td v-if="row.owner_email === useremail">{{ row.tenant_email }}</td>
-        <td v-if="row.owner_email === useremail">{{ row.tenant_phone }}</td>
-        <td v-if="row.owner_email === useremail">
+        <td v-if="row.owner_email === useremail && row.isRented">{{ row.prop_address }}</td>
+        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_name }}</td>
+        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_email }}</td>
+        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_phone }}</td>
+        <td v-if="row.owner_email === useremail && row.isRented">
           <div id="flexbutt">
             <RouterLink to="/indivcontract"
               ><button class="button2">View</button></RouterLink
@@ -86,6 +86,7 @@ export default {
           const propRef = doc(db, "Property", documentData.PropertyID);
           const propDetails = await getDoc(propRef);
           let prop_address = propDetails.data().prop_address;
+          let isRented = propDetails.data().isRented;
 
           // Accessing Tenant details
           let tenant_email = documentData.tenant_email;
@@ -95,6 +96,7 @@ export default {
           let tenant_phone = tenantDetails.data().Phone;
 
           return {
+            isRented,
             owner_email,
             prop_address,
             tenant_name,

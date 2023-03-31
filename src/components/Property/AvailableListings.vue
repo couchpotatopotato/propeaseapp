@@ -11,9 +11,9 @@
 
       <!-- only render the td when the email matches the current user -->
       <tr v-for="row in tableRows" :key="row.owner_email">
-        <td v-if="row.owner_email === useremail">{{ row.prop_name }}</td>
-        <td v-if="row.owner_email === useremail">{{ row.prop_address }}</td>
-        <td v-if="row.owner_email === useremail">
+        <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_name }}</td>
+        <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_address }}</td>
+        <td v-if="row.owner_email === useremail && !row.isRented">
           <div id="flexbutt">
             <button class="button2">View</button>
             <button class="button2">Delete</button>

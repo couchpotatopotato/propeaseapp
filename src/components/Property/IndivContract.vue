@@ -1,139 +1,208 @@
 <template>
-  <div>
-    <h1>View Contract Details</h1>
-  </div>
-  <br />
-  <div class="card">
-    <div id="Prop" class="card3">
-      <img
+    <!-- <div class = "about">
+        <h1>View Contract Details</h1>
+    </div> -->
+    <br />
+    <div class="card">
+        <div id="Prop" class="card3">
+        <img
         id="img1"
         src="src/components/Property/AddPropImg.jpeg"
         alt="Card Image"
-      />
-      <span class="field">Address</span> <br />
-      <span id="inputAddress">Blk 123 blablabla</span>
-    </div>
+        />
+        <span class="field">Address</span> <br />
+            <span id="inputAddress">{{prop_address}}</span>
+        </div>
 
-    <div id="PayAmt" class="card3">
-      <span class="field">Next Payment Amount</span> <br />
-      <!-- This next tag will later be filled in using innerHTML -->
-      <span id="inputPayAmt" class="info">PaymentAmount</span>
-    </div>
+        <div id="PayAmt" class="card3">
+            <span class="field">Next Payment Amount</span> <br />
+            <!-- This next tag will later be filled in using innerHTML -->
+            <span id="inputPayAmt" class="info">{{nextPaymentAmount}}</span>
+        </div>
 
-    <div id="PayDate" class="card3">
-      <span class="field">Next Payment Date</span> <br />
-      <!-- This next tag will later be filled in using innerHTML -->
-      <span id="inputPayDate" class="info">PaymentDate</span>
-    </div>
+        <div id="PayDate" class="card3">
+            <span class="field">Next Payment Date</span> <br />
+            <!-- This next tag will later be filled in using innerHTML -->
+            <span id="inputPayDate" class="info">{{nextPaymentDate}}</span>
+        </div>
 
-    <div id="ContractEndDate" class="card3">
-      <span class="field">Contract End Date</span> <br />
-      <!-- This next tag will later be filled in using innerHTML -->
-      <span id="inputContractEndDate" class="info">ContractEndDate</span>
-    </div>
+        <div id="ContractEndDate" class="card3">
+            <span class="field">Contract End Date</span> <br />
+            <!-- This next tag will later be filled in using innerHTML -->
+            <span id="inputContractEndDate" class="info">{{contractEndDate}}</span>
+        </div>
 
-    <div id="Tenant" class="card3">
-      <span class="field">Tenant Information</span> <br />
-      <!-- This next tags will later be filled in using innerHTML -->
-      <span id="tenantName" class="info">Name</span> <br />
-      <span id="tenantEmail" class="field">Email</span> <br />
-      <span id="tenantPhone" class="field">Phone</span>
+        <div id="Tenant" class="card3">
+            <span class="field">Tenant Information</span> <br />
+            <!-- This next tags will later be filled in using innerHTML -->
+            <span id="tenantName" class="info">{{tenantName}}</span> <br />
+            <span id="tenantEmail" class="field">{{tenantEmail}}</span> <br />
+            <span id="tenantPhone" class="field">{{tenantPhone}}</span>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-// import firebaseApp from '@/firebase.js';
-// import{ getFirestore } from "firebase/firestore";
-// import { doc, getDoc } from "firebase/firestore";
+import firebaseApp from '@/firebase.js';
+import{ getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc, getDocs } from "firebase/firestore";
+import { query, where, collection } from 'firebase/firestore';
 
-// const db = getFirestore(firebaseApp);
-// // For now: Need to retrieve a specific data value then use it
-// // to get data from other collections
-// // In future, Probably need to get data from parent component (ActiveContracts.vue)
-// //
-//
-// export default {
-//     mounted() {
-//         async function display() {
-//             // Get Payment Data
+const db = getFirestore(firebaseApp);
 
-//             // Get Contract Data
+export default {
+  data() {
+    return {
+      prop_address: "",
+      nextPaymentAmount: "",
+      nextPaymentDate: "",
+      contractEndDate: "",
+      tenantName: "",
+      tenantEmail: "",
+      tenantPhone: ""
+    }
+  },
 
-//             // Get Property Data
+  async mounted() {
+    const auth = getAuth();
+    this.useremail = auth.currentUser.email;
 
-//             // Get Tenant Data
+    // In future, Probably need to get data from 
+    // For now, set tempPropertyID as a constant, but you should replace this 
+    // with a variable that holds the property ID obtained from the previous page 
+    // - component (ActiveContracts.vue) from PropertyView
+    const tempPropertyID = "MXFA6XNUG9AaEEiV7iJT";
+    await this.fetchAndUpdateData(this.useremail, tempPropertyID);
+  },
 
-//             // Input data into HTML
-//             document.getElementById("inputAddress").innerHTML = propertyData.Address;
-//             document.getElementById("inputPayAmt").innerHTML = contractData.RentalCost;
-//             document.getElementById("inputPayDate").innerHTML = paymentData.Date.toDate().toLocaleDateString();
-//             document.getElementById("inputContractEndDate").innerHTML = contractData.EndDate;
-//             document.getElementById("tenantName").innerHTML = tenantData.Name;
-//             document.getElementById("tenantEmail").innerHTML = tenantData.Email;
-//             document.getElementById("tenantPhone").innerHTML = tenantData.Phone;
-//         }
-//         display();
-//     }
-// }
+  methods: {
+    /* Parse in parameters: Property Owner's Email, propertyID to get:
+    - From Property Collection: property_address
+    - From Contract Collection:
+        - Contract.RentalCost (nextPaymentAmount)
+        - Contract.EndDate (contractEndDate)
+        - Contract.tenant_email (tenantEmail) ---> (Document PK/ID of each Tenant document) -> use to get tenant info
+        - Contract.contractID (Document PK/ID of each Contract) use this to get due date
+    - Use contractID to get Payment.dueDate (nextPaymentDate)
+    - Use tenantEmail to get 
+        - Tenant.tenant_name: tenantName
+        - Tenant.tenant_phone: tenantPhone
+    */
+    async fetchAndUpdateData(useremail, propertyID) { 
+      try {
+        // Get the property address using propertyID
+        const propertyDocRef = doc(db, "Property", propertyID);
+        const propertyDocSnap = await getDoc(propertyDocRef);
+        this.prop_address = propertyDocSnap.data().prop_address;
+
+        // Get the contract data using owner_email and PropertyID
+        const contractQuery = query(
+            collection(db, 'Contract'),
+            where('owner_email', '==', useremail),
+            where('PropertyID', '==', propertyID)
+        );
+        const contractQuerySnapshot = await getDocs(contractQuery);
+        if (contractQuerySnapshot.empty) {
+          console.log('No matching Contract documents.');
+          return;
+        }
+
+        // Get the first matching contract document
+        const contractDoc = contractQuerySnapshot.docs[0];
+        // console.log("This is contractDoc: " + contractDoc)
+
+        this.nextPaymentAmount = contractDoc.data().RentalCost;
+        this.contractEndDate = contractDoc.data().EndDate.toDate().toLocaleDateString();
+        this.tenantEmail = contractDoc.data().tenant_email;
+        const contractID = contractDoc.id;
+
+        // Get the payment due date using the contract ID
+        const paymentQuery = query(
+            collection(db, 'Payment'),
+            where('ContractID', '==', contractID)
+        );
+        const paymentQuerySnapshot = await getDocs(paymentQuery);
+
+        // const paymentQuerySnapshot = await db.collection('Payment').where('ContractID', '==', contractID).get();
+        if (paymentQuerySnapshot.empty) {
+          console.log('No matching Payment documents.');
+          return;
+        }
+
+        // Get the first matching payment document
+        const paymentDoc = paymentQuerySnapshot.docs[0];
+        this.nextPaymentDate = paymentDoc.data().dueDate.toDate().toLocaleDateString();
+
+        // Get the tenant data using tenant_email
+        const tenantDocRef = doc(db, "Tenant", this.tenantEmail);
+        const tenantDocSnap = await getDoc(tenantDocRef);
+        this.tenantName = tenantDocSnap.data().Name;
+        this.tenantPhone = tenantDocSnap.data().Phone;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
 .card {
-  display: grid;
-  grid-gap: 20px;
-  grid-template:
+    display: grid;
+    grid-gap: 20px;
+    grid-template: 
     "a b b c c d d"
     "a e e e e e e"
     "a e e e e e e";
 }
 
 #Prop {
-  grid-area: a;
+    grid-area: a;
   width: 300px;
 }
 
 #PayAmt {
-  grid-area: b;
+    grid-area: b;
 }
 
 #PayDate {
-  grid-area: c;
+    grid-area: c;
 }
 
 #ContractEndDate {
-  grid-area: d;
+    grid-area: d;
 }
 
 #Tenant {
-  grid-area: e;
+    grid-area: e;
 }
 
 .card3 {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-  border-radius: 5px; /* 5px rounded corners */
-  background-color: var(--color-background);
-  padding: 15px 0px 15px 0px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    border-radius: 5px; /* 5px rounded corners */
+    background-color: var(--color-background);
+    padding: 15px 0px 15px 0px;
 }
 
 #img1 {
-  width: 100%;
-  margin: 0px;
+    width: 100%;
+    margin: 0px;
 }
 
 span {
-  padding: 15px;
-  font-size: 18px;
+    padding: 15px;
+    font-size: 18px;
 }
 
 .field {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .info {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--color-darkblue);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-darkblue);
 }
 </style>

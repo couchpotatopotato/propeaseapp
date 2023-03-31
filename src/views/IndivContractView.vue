@@ -1,8 +1,12 @@
 <template>
     <div class="about"> 
-        <IndivContract/> <br><br>
-        <ContractPayHist/> 
+        <h1>View Contract Details</h1>
     </div>
+    <IndivContract/>
+    <div class="about"> 
+        <h1>Contract Payment History</h1>
+    </div>
+    <ContractPayHist/> 
 </template>
 
 <style></style>
