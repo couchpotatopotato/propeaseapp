@@ -1,10 +1,28 @@
 <script>
+import firebaseApp from '@/firebase.js';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+
 export default {
-    emits: ["showRegist"],
+    data() {
+        return {
+            email: ''
+        };
+    },
+    emits: ["showLogin"],
     methods: {
-        showRegist() {
-            this.$emit("showRegist", true);
+        showLogin() {
+            this.$emit("showLogin", true);
         },
+        sendPwResetLink() {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, this.email)
+                .then(() => {
+                    alert("Password reset email sent!");
+                })
+                .catch((error) => {
+                    alert(error.message);
+                })
+        }
     },
     created() {
         var scripts = [
@@ -21,46 +39,26 @@ export default {
 </script>
 
 <template>
-    <!--<div class="input">
-            <p>To reset your password enter your email we'll send you a link to reset your password.</p>
-        </div>
-        <div class="input">
-            <input class="main-form animated bounceInDown" type="text" name="usrname" placeholder=" EMAIL ADDRESS"/>
-        </div>
-        <div class="input">
-            <input class="main-form btn reset animated bounceInDown" type="button" name="" value="RESET PASSWORD"/>
-        </div>-->
-    <form>
-        <h1 class="text-center"><strong>To reset your password ...</strong></h1>
+    <form @submit.prevent="sendPwResetLink">
+        <h1 class="text-center">
+            <strong>Reset Password</strong>
+        </h1>
+        <p class="text-center" style="color: grey;">Please enter your registered email, so we can send you a link to reset your password.</p>
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Email">
-        </div>
-        <div class="form-group">
-            <label for="pw">Password</label>
-            <input class="form-control" type="password" id="pw" name="pw" placeholder="Enter your Password">
-        </div>
-        <div class="form-group">
-            <label for="userType">User Type</label>
-            <select class="form-control" id="userType">
-                <option value="Owner" id="owner">Owner</option>
-                <option value="Tenant" id="tenant">Tenant</option>
-            </select>
+            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Registered Email" required v-model="email">
         </div>
 
         <br>
 
         <div class="form-group">
-            <button class="btn btn-success btn-block">Sign in</button>
+            <button class="btn btn-success btn-block" type="submit">Send Link</button>
         </div>
 
         <div class="form-group">
-            <p class="already">Do not have an account?<button class="txtBtn" @click="showRegist">Create Account</button></p>
-        </div>
-
-        <div class="form-group">
-            <p class="already"><button class="txtBtn">Reset Password</button></p>
+            <p class="already">Got back your password?<button class="txtBtn" @click="showLogin">Sign in</button>
+            </p>
         </div>
     </form>
 </template>
@@ -98,10 +96,6 @@ form .form-control {
     color: inherit;
     text-indent: 6px;
     height: 40px;
-}
-
-select {
-    -webkit-appearance: none;
 }
 
 .btn-success {

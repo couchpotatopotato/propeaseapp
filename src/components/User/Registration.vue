@@ -44,7 +44,7 @@ export default {
                         alert(error.message);
                     }
                 })
-        }
+        },
     },
     created() {
         var scripts = [
@@ -70,15 +70,18 @@ export default {
         </div>
         <div class="form-group">
             <label for="contactNo">Contact Number</label>
-            <input class="form-control" type="text" id="contactNo" name="contactNo" placeholder="Enter your Contact Number" required v-model="contactNo">
+            <input class="form-control" type="text" id="contactNo" name="contactNo" placeholder="Enter your Contact Number" required v-model="contactNo" pattern="(6|8|9)[0-9]{7}">
+            <span class="error-messge"></span>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Email" required v-model="email">
+            <input class="form-control" type="email" id="email" name="email" placeholder="Enter your Email" required v-model="email" >
+            <span class="error-messge"></span>
         </div>
         <div class="form-group">
             <label for="pw">Password</label>
             <input class="form-control" type="password" id="pw" name="pw" placeholder="Enter your Password" required v-model="password">
+            <span class="error-messge"></span>
         </div>
         <div class="form-group">
             <label for="userType">User Type</label>
@@ -103,6 +106,11 @@ export default {
 
 <style scoped>
 @import 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+
+.error-messge {
+  display: block;
+  color: red;
+  font-weight: 300; }
 
 form {
     display: table-cell;
