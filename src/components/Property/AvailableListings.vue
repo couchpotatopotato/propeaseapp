@@ -19,8 +19,8 @@
         </td>
         <td v-if="row.OwnerEmail === useremail && !row.IsRented">
           <div id="flexbutt">
-            <button class="button2">View</button>
-            <button class="button2">Delete</button>
+            <button class="button button2">View</button>
+            <button class="button button2">Delete</button>
           </div>
         </td>
       </tr>

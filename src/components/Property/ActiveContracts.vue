@@ -32,9 +32,9 @@
         <td v-if="row.OwnerEmail === useremail">
           <div id="flexbutt">
             <RouterLink :to="'indivcontract/' + row.ContractId">
-              <button class="button2">View</button></RouterLink
+              <button class="button button2">View</button></RouterLink
             >
-            <button class="button2">Delete</button>
+            <button class="button button2">Delete</button>
           </div>
         </td>
       </tr>

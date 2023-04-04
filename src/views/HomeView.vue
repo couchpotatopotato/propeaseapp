@@ -8,7 +8,7 @@
 <style scoped>
 .about {
   margin-left: 15%;
-  margin-top: 11%;
+  margin-top: 20%;
 }
 
 h1 {

@@ -33,8 +33,8 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
-  --color-lightblue: #39ace7;
-  --color-darkblue: #0784b5;
+  --color-lightblue: #4b5ea9;
+  --color-darkblue: #293565;
 
   --color-bluehover: hsla(209, 100%, 37%, 0.097);
 }

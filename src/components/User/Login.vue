@@ -172,7 +172,7 @@ select {
 }
 
 .btn-success {
-  background-color: var(--color-darkblue);
+  background-color: var(--color-lightblue);
   border-radius: 0%;
   width: 65%;
   margin: 0 auto;

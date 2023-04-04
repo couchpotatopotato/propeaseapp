@@ -43,18 +43,23 @@ export default {
   </header>
   <br />
 
-  <RouterView />
+  <div id="pagecomponent">
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
+#pagecomponent {
+  margin: 0 150px 150px 100px;
+}
+
 header {
   position: sticky;
   top: 0;
-  background-color: white;
   z-index: 1;
   padding: 30px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
+  background-color: var(--color-darkblue);
 }
 
 nav {
@@ -63,7 +68,7 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--color-text);
+  color: white;
 }
 
 nav a.router-link-exact-active:hover {
@@ -74,6 +79,7 @@ nav a {
   display: inline-block;
   padding: 0 3%;
   border-left: 1px solid var(--color-border);
+  color: rgb(155, 155, 155);
 }
 
 nav button {
@@ -82,13 +88,17 @@ nav button {
   border: none;
   border-left: 1px solid var(--color-border);
   background: none;
-  color: var(--color-lightblue);
+  color: rgb(155, 155, 155);
 }
 
+nav a:hover {
+  text-decoration: none;
+  color: white;
+  transition: 0.4s;
+  background-color: transparent;
+}
 nav button:hover {
-  text-decoration: underline;
-  color: #0056b3;
-  background-color: hsla(209, 100%, 37%, 0.097);
+  color: white;
   transition: 0.4s;
 }
 
