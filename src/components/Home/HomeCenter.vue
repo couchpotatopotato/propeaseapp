@@ -1,11 +1,13 @@
 <template>
   <div id="maincontainer">
-    <div style="margin-bottom: 30px">
-      <h2 style="margin-bottom: 10px">5 Notifications</h2>
+    <div>
+      <h2>5 Notifications</h2>
       <RouterLink to="/notif">
         <button class="button">View</button>
       </RouterLink>
     </div>
+    <br />
+    <br />
     <div class="flexcontainer">
       <RouterLink to="/property">
         <button class="button button2">Property</button>
@@ -29,6 +31,15 @@
 
 #maincontainer {
   margin-left: 15%;
+  margin-top: 3%;
+}
+
+.button {
+  width: 150px;
+}
+
+.button2 {
+  width: 250px;
 }
 </style>
 

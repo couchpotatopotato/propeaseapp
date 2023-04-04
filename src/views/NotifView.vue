@@ -1,8 +1,8 @@
 <template>
-  <div class="about">
-    <h1>Notifications</h1>
+  <div>
+    <div class="about">Notifications</div>
+    <Notifications />
   </div>
-  <Notifications />
 </template>
 
 <style></style>

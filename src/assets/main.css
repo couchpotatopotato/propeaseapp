@@ -13,8 +13,8 @@
 body {
   /* display: flex; */
   background-image: url("backgroundimg.jpg");
-  background-size: 400px;
-  background-position: 80% 50%;
+  background-size: 600px;
+  background-position: 80% 60%;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -24,8 +24,10 @@ body {
   margin-bottom: 30px;
   display: flex;
   align-items: center;
-  font-size: 80px;
+  font-size: 70px;
   min-height: 8rem;
+  font-weight: 600;
+  color: var(--color-darkblue);
 }
 
 .card {
@@ -45,6 +47,7 @@ body {
 .button {
   background-color: var(--color-background);
   padding: 10px 15px;
+  border-radius: 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -54,18 +57,18 @@ body {
 }
 
 .button:hover {
-  background-color: var(--color-lightblue);
+  background-color: rgb(75, 75, 75);
   color: white;
 }
 
 .button2 {
   color: white;
-  background-color: var(--color-lightblue);
+  background-color: var(--color-darkblue);
   width: 200px;
   border-radius: 5px;
   font-size: 1.2rem;
 }
 
 .button2:hover {
-  background-color: rgb(19, 33, 63);
+  background-color: rgb(75, 75, 75);
 }

@@ -30,21 +30,27 @@ export default {
 </script>
 
 <template>
-  <header v-if="user">
-    <!-- hide when not login -->
-    <nav>
-      <RouterLink to="/home">Home</RouterLink>
-      <RouterLink to="/notif">Notification</RouterLink>
-      <RouterLink to="/property">Property</RouterLink>
-      <RouterLink to="/dashboard">Dashboard</RouterLink>
-      <RouterLink to="/profile">Profile</RouterLink>
-      <button id="logoutBtn" @click="signOut()">Logout</button>
-    </nav>
-  </header>
-  <br />
+  <div>
+    <header v-if="user">
+      <!-- hide when not login -->
+      <nav>
+        <RouterLink to="/home">Home</RouterLink>
+        <RouterLink to="/notif">Notification</RouterLink>
+        <RouterLink to="/property">Property</RouterLink>
+        <RouterLink to="/dashboard">Dashboard</RouterLink>
+        <RouterLink to="/profile">Profile</RouterLink>
+        <button id="logoutBtn" @click="signOut()">Logout</button>
+      </nav>
+    </header>
+    <br />
 
-  <div id="pagecomponent">
-    <RouterView />
+    <div id="pagecomponent">
+      <RouterView v-slot="{ Component }">
+        <transition name="fade">
+          <component :is="Component" />
+        </transition>
+      </RouterView>
+    </div>
   </div>
 </template>
 

@@ -1,19 +1,16 @@
 <template>
-  <div class="about">
-    <h1>PropEase</h1>
+  <div>
+    <div class="about">PropEase</div>
+    <HomeCenter />
   </div>
-  <HomeCenter />
 </template>
 
 <style scoped>
 .about {
   margin-left: 15%;
-  margin-top: 20%;
-}
-
-h1 {
-  font-size: 5rem;
-  font-weight: 500;
+  margin-top: 18%;
+  font-weight: 700;
+  font-size: 100px;
 }
 </style>
 

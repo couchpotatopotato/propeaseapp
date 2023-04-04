@@ -1,9 +1,9 @@
 <template>
-  <div class="about">
-    <h1>Profile</h1>
+  <div>
+    <div class="about">Profile</div>
+    <ViewProfile @showEdit="showEditFunc($event)" v-if="showView" />
+    <EditProfile @showView="showViewFunc($event)" v-if="showEdit" />
   </div>
-  <ViewProfile @showEdit="showEditFunc($event)" v-if="showView" />
-  <EditProfile @showView="showViewFunc($event)" v-if="showEdit" />
 </template>
 
 <style></style>

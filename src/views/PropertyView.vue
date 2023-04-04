@@ -1,10 +1,10 @@
 <template>
-  <div class="about">
-    <h1>Property</h1>
+  <div>
+    <div class="about">Property</div>
+    <PropListing /><br /><br />
+    <ActiveContracts /><br /><br />
+    <AvailableListings />
   </div>
-  <PropListing /><br /><br />
-  <ActiveContracts /><br /><br />
-  <AvailableListings />
 </template>
 
 <style></style>

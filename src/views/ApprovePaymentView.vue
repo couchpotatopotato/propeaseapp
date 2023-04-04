@@ -1,8 +1,8 @@
 <template>
-  <div class="about">
-    <h1>Approve Payment</h1>
+  <div>
+    <div class="about">Approve Payment</div>
+    <ApprovePayment />
   </div>
-  <ApprovePayment />
 </template>
 
 <style></style>
