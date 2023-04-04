@@ -56,7 +56,7 @@ const router = createRouter({
       component: () => import("../views/PropertyView.vue"),
     },
     {
-      path: "/indivcontract",
+      path: "/indivcontract/:ContractId",
       name: "indivcontract",
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route

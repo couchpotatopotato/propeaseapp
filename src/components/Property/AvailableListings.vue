@@ -10,10 +10,14 @@
       </tr>
 
       <!-- only render the td when the email matches the current user -->
-      <tr v-for="row in tableRows" :key="row.owner_email">
-        <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_name }}</td>
-        <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_address }}</td>
-        <td v-if="row.owner_email === useremail && !row.isRented">
+      <tr v-for="row in tableRows" :key="row.OwnerEmail">
+        <td v-if="row.OwnerEmail === useremail && !row.IsRented">
+          {{ row.PropName }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail && !row.IsRented">
+          {{ row.PropAddress }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail && !row.IsRented">
           <div id="flexbutt">
             <button class="button2">View</button>
             <button class="button2">Delete</button>
@@ -29,10 +33,9 @@ import firebaseApp from "@/firebase.js";
 import {
   collection,
   getDocs,
-  getDoc,
-  doc,
-  deleteDoc,
   getFirestore,
+  query,
+  where,
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -43,6 +46,7 @@ export default {
     return {
       tableRows: [],
       useremail: "",
+      PropertyId: "",
     };
   },
 
@@ -57,23 +61,25 @@ export default {
     async fetchAndUpdateData(useremail) {
       // Collect data from relevant Collections
       const colRef = collection(db, "Property");
-      const allDocuments = await getDocs(colRef);
+      const allProperty = await getDocs(colRef);
 
       // Promise.all to ensure all async operations are over.
       // to iterate over all documents and create arrays of promises
       this.tableRows = await Promise.all(
-        allDocuments.docs.map(async (doc) => {
-          let documentData = doc.data();
-          let isRented = documentData.isRented;
-          let owner_email = documentData.owner_email;
-          let prop_address = documentData.prop_address;
-          let prop_name = documentData.prop_name;
+        allProperty.docs.map(async (doc) => {
+          let propertyData = doc.data();
+          let IsRented = propertyData.IsRented;
+          let OwnerEmail = propertyData.OwnerEmail;
+          let PropAddress = propertyData.PropAddress;
+          let PropName = propertyData.PropName;
+          let PropertyId = doc.id;
 
           return {
-            isRented,
-            owner_email,
-            prop_address,
-            prop_name,
+            IsRented,
+            OwnerEmail,
+            PropAddress,
+            PropName,
+            PropertyId,
           };
         })
       );

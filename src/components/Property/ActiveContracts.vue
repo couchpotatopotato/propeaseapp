@@ -16,27 +16,29 @@
         <th>Contact Details</th>
         <th>Action</th>
       </tr>
-      <tr v-for="row in tableRows" :key="row.prop_address">
-        <td v-if="row.owner_email === useremail && row.isRented">{{ row.prop_address }}</td>
-        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_name }}</td>
-        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_email }}</td>
-        <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_phone }}</td>
-        <td v-if="row.owner_email === useremail && row.isRented">
+      <tr v-for="row in tableRows" :key="row.PropAddress">
+        <td v-if="row.OwnerEmail === useremail">
+          {{ row.PropAddress }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail">
+          {{ row.TenantName }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail">
+          {{ row.TenantEmail }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail">
+          {{ row.TenantPhone }}
+        </td>
+        <td v-if="row.OwnerEmail === useremail">
           <div id="flexbutt">
-            <RouterLink to="/indivcontract">
-              <button class="button2">View</button></RouterLink>
+            <RouterLink :to="'indivcontract/' + row.ContractId">
+              <button class="button2">View</button></RouterLink
+            >
             <button class="button2">Delete</button>
           </div>
         </td>
       </tr>
     </table>
-  </div>
-  <!-- Add new div for temporary button linking to IndivContractView.vue -->
-  <br />
-  <div class="flexcontainer">
-    <RouterLink to="/indivcontract">
-      <button class="button button2">View Indiv Active Contract</button>
-    </RouterLink>
   </div>
 </template>
 
@@ -59,6 +61,7 @@ export default {
     return {
       tableRows: [],
       useremail: "",
+      ContractId: "",
     };
   },
 
@@ -72,35 +75,37 @@ export default {
     async fetchAndUpdateData(useremail) {
       // Collect data from relevant Collections
       const colRef = collection(db, "Contract");
-      const allDocuments = await getDocs(colRef);
+      const allContracts = await getDocs(colRef);
 
       // Promise.all to ensure all async operations are over.
       // to iterate over all documents and create arrays of promises
       this.tableRows = await Promise.all(
-        allDocuments.docs.map(async (documents) => {
-          let documentData = documents.data();
-          let owner_email = documentData.owner_email;
+        allContracts.docs.map(async (documents) => {
+          let ContractId = documents.id;
+          let propertyData = documents.data();
+          let OwnerEmail = propertyData.OwnerEmail;
 
           // Accessing Property details
-          const propRef = doc(db, "Property", documentData.PropertyID);
+          const propRef = doc(db, "Property", propertyData.PropertyId);
           const propDetails = await getDoc(propRef);
-          let prop_address = propDetails.data().prop_address;
-          let isRented = propDetails.data().isRented;
+          let PropAddress = propDetails.data().PropAddress;
+          let IsRented = propDetails.data().IsRented;
 
           // Accessing Tenant details
-          let tenant_email = documentData.tenant_email;
-          const tenantRef = doc(db, "Tenant", tenant_email);
+          let TenantEmail = propertyData.TenantEmail;
+          const tenantRef = doc(db, "Tenant", TenantEmail);
           const tenantDetails = await getDoc(tenantRef);
-          let tenant_name = tenantDetails.data().Name;
-          let tenant_phone = tenantDetails.data().Phone;
+          let TenantName = tenantDetails.data().Name;
+          let TenantPhone = tenantDetails.data().Phone;
 
           return {
-            isRented,
-            owner_email,
-            prop_address,
-            tenant_name,
-            tenant_email,
-            tenant_phone,
+            IsRented,
+            OwnerEmail,
+            PropAddress,
+            TenantName,
+            TenantEmail,
+            TenantPhone,
+            ContractId,
           };
         })
       );
