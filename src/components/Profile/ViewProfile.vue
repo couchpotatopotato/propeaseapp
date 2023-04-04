@@ -63,7 +63,7 @@ export default {
       const data = info.data();
       this.fullname = data["Name"];
       this.number = data["Phone"];
-      this.email = data["Email"];
+      this.email = info.id;
     },
   },
 };
