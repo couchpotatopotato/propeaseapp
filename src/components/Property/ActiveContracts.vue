@@ -23,9 +23,8 @@
         <td v-if="row.owner_email === useremail && row.isRented">{{ row.tenant_phone }}</td>
         <td v-if="row.owner_email === useremail && row.isRented">
           <div id="flexbutt">
-            <RouterLink to="/indivcontract"
-              ><button class="button2">View</button></RouterLink
-            >
+            <RouterLink to="/indivcontract">
+              <button class="button2">View</button></RouterLink>
             <button class="button2">Delete</button>
           </div>
         </td>
