@@ -28,7 +28,6 @@ export default {
                     setDoc(doc(db, String(this.userType), this.email), {
                         Name: this.fullname,
                         Phone: this.contactNo,
-                        Email: this.email,
                     });
                 })
                 .then(() => {
