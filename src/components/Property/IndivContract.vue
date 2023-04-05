@@ -102,6 +102,10 @@ export default {
       this.nextPaymentAmount = contractData.RentalCost;
       this.contractEndDate = contractData.EndDate.toDate().toLocaleDateString();
 
+      // Comparison of curren date
+      console.log(new Date().toLocaleString());
+      console.log(this.contractEndDate >= new Date().toLocaleString());
+
       // Get the Property details using PropertyId
       const propertyDocRef = doc(db, "Property", PropertyId);
       const propertyDoc = await getDoc(propertyDocRef);
