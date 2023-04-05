@@ -6,8 +6,6 @@
       <input type="text" id="input1" v-model="prop_name" />
       <label for="prop_address">Address:</label>
       <input type="text" id="input2" v-model="prop_address" />
-      <label for="owner_email">Owner's Email:</label>
-      <input type="text" id="input3" v-model="owner_email" />
       <RouterLink to="/property">
         <button type="add" @click="saveCard">Add</button>
       </RouterLink>
@@ -69,7 +67,7 @@ import firebaseApp from "@/firebase.js";
 import { collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
 import {useToast} from 'vue-toast-notification';
-// import VueToast from 'vue-toast-notification';
+import { getAuth } from "firebase/auth";
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 const db = getFirestore(firebaseApp);
@@ -85,7 +83,7 @@ export default {
     return {
       prop_name: "",
       prop_address: "",
-      owner_email: "",
+      // owner_email: "",
     };
   },
   mounted() {
@@ -94,30 +92,20 @@ export default {
     // this.$toast.error('Error')
     console.log(this.$toast);
     // Vue.use(ToastPlugin);
+    const auth = getAuth();
+    this.useremail = auth.currentUser.email;
   },
   methods: {
-    validateEmail(email) {
-      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
-      return emailRegex.test(email);
-    },
     saveCard() {
-      if (this.validateEmail(this.owner_email)) {
-        // email is valid, do something
-        const card = addDoc(collection(db, "Property"), {
-          prop_name: this.prop_name,
-          prop_address: this.prop_address,
-          isRented: true,
-          owner_email: this.owner_email,
-        });
-        console.log(card.id);
-      // } else if (this.$toast) {
-      //   this.$toast.error('Invalid email address');
-      } else if (this.prop_name == "" || this.prop_address == "" || this.owner_email == "") {
+      if (this.prop_name == "" || this.prop_address == "") {
         this.$toast.error('Unfilled Fields!');
       } else {
-        console.log("fail");
-        // email is not valid, show error message
-        this.$toast.error('Invalid email address');
+        const card = addDoc(collection(db, "Property"), {
+          PropName: this.prop_name,
+          PropAddress: this.prop_address,
+          IsRented: false,
+          OwnerEmail: this.useremail,
+        });
       }
     },
   },

@@ -1,14 +1,17 @@
 <template>
   <div>
     <h2>Available Listings</h2>
-    <br />
     <table>
+      <colgroup>
+        <col span="1" style="width: 30%" />
+        <col span="1" style="width: 40%" />
+        <col span="1" style="width: 30%" />
+      </colgroup>
       <tr>
         <th>Name</th>
         <th>Address</th>
         <th>Action</th>
       </tr>
-
       <!-- only render the td when the email matches the current user -->
       <tr v-for="row in tableRows" :key="row.OwnerEmail">
         <td v-if="row.OwnerEmail === useremail && !row.IsRented">
@@ -19,8 +22,10 @@
         </td>
         <td v-if="row.OwnerEmail === useremail && !row.IsRented">
           <div id="flexbutt">
-            <button class="button button2">View</button>
-            <button class="button button2">Delete</button>
+            <RouterLink :to="'addtenant/' + row.PropertyId">
+              <button class="button button2">AddContract</button>
+            </RouterLink>
+            <button class="button button2" @click="deleteProperty(row.PropertyId)">Delete</button>
           </div>
         </td>
       </tr>
@@ -33,6 +38,8 @@ import firebaseApp from "@/firebase.js";
 import {
   collection,
   getDocs,
+  doc,
+  deleteDoc,
   getFirestore,
   query,
   where,
@@ -45,15 +52,12 @@ export default {
   data() {
     return {
       tableRows: [],
-      useremail: "",
-      PropertyId: "",
     };
   },
 
   async mounted() {
     const auth = getAuth();
     this.useremail = auth.currentUser.email;
-
     await this.fetchAndUpdateData(this.useremail);
   },
 
@@ -84,6 +88,13 @@ export default {
         })
       );
     },
+
+    async deleteProperty(PropertyId) {
+      alert("You are going to delete this property!")
+      await deleteDoc(doc(db, "Property", PropertyId));
+      console.log("Deleted Document successfully, PropertyId is : " + PropertyId);
+      // ONLY PROBLEM NOW IS THAT IT DOESN'T REFRESH
+    }
   },
 };
 </script>

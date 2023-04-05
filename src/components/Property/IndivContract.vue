@@ -45,7 +45,8 @@
     <div id="Action" class="card3">
         <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
         <div v-else id="flexbutt">
-            <RouterLink :to="'/addtenant' + PropID">
+          <!-- In future, need to edit the router link later to go to individual approve payment page -->
+            <RouterLink :to="'/approvepayment'">
               <button class="button2">View</button>
             </RouterLink>
           </div>
@@ -85,7 +86,6 @@ export default {
     // New part for router
     const route = useRoute();
     const ContractId = route.params.ContractId;
-    // const ContractId = "O6LZIsxeNBl5ajNf45QV";
     await this.fetchAndUpdateData(this.useremail, ContractId);
   },
 

@@ -1,18 +1,20 @@
 <template>
     <div>
       <table>
+        <colgroup>
+          <col span="1" style="width: 35%" />
+          <col span="1" style="width: 35%" />
+          <col span="1" style="width: 30%" />
+        </colgroup>
         <tr>
-            <th>S/N</th>
             <th>Payment Date</th>
-            <th>Approval Date</th>
+            <th>Payment Mode</th>
             <th>Payment Amount</th>
         </tr>
-        <!-- only render the td when the email matches the current user -->
-        <tr v-for="row in tableRows" :key="row.owner_email">
-            <td v-if="row.owner_email === useremail && !row.isRented">{{ row.index + 1 }}</td>
-            <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_name }}</td>
-            <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_address }}</td>
-            <td v-if="row.owner_email === useremail && !row.isRented">{{ row.prop_address }}</td>
+        <tr v-for="row in tableRows" :key="row.CurrContractId">
+            <td v-if="row.ContractId === ContractId">{{ row.PaymentDate }}</td>
+            <td v-if="row.ContractId === ContractId">{{ row.Mode }}</td>
+            <td v-if="row.ContractId === ContractId">{{ row.PaymentAmount }}</td>
         </tr>
       </table>
     </div>
@@ -28,7 +30,7 @@ import {
   deleteDoc,
   getFirestore,
 } from "firebase/firestore";
-
+import { useRoute } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
@@ -36,21 +38,23 @@ export default {
   data() {
     return {
       tableRows: [],
-      useremail: "",
+      ContractId: ""
     };
   },
 
   async mounted() {
     const auth = getAuth();
     this.useremail = auth.currentUser.email;
-
-    await this.fetchAndUpdateData(this.useremail);
+    // New part for router
+    const route = useRoute();
+    this.ContractId = route.params.ContractId;
+    await this.fetchAndUpdateData();
   },
 
   methods: {
-    async fetchAndUpdateData(useremail) {
+    async fetchAndUpdateData() {
       // Collect data from relevant Collections
-      const colRef = collection(db, "Property");
+      const colRef = collection(db, "PaymentHistory");
       const allDocuments = await getDocs(colRef);
 
       // Promise.all to ensure all async operations are over.
@@ -58,18 +62,16 @@ export default {
       this.tableRows = await Promise.all(
         allDocuments.docs.map(async (doc) => {
           let documentData = doc.data();
-          let isRented = documentData.isRented;
-          let owner_email = documentData.owner_email;
-          let prop_address = documentData.prop_address;
-          let prop_name = documentData.prop_name;
-          let index = 0;
+          let ContractId = documentData.ContractId;
+          let Mode = documentData.Mode;
+          let PaymentAmount = documentData.PaymentAmount;
+          let PaymentDate = documentData.PaymentDate.toDate().toLocaleDateString();
 
           return {
-            index,
-            isRented,
-            owner_email,
-            prop_address,
-            prop_name,
+            ContractId,
+            Mode,
+            PaymentAmount,
+            PaymentDate
           };
         })
       );
