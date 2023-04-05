@@ -1,8 +1,4 @@
 <template>
-  <!-- <div class = "about">
-        <h1>View Contract Details</h1>
-    </div> -->
-  <br />
   <div class="card">
     <div id="Prop" class="card3">
       <img
@@ -14,6 +10,12 @@
       <span id="inputAddress">{{ PropAddress }}</span>
     </div>
 
+    <div id="PayStatus" class="card3">
+      <span class="field">Payment Status</span> <br />
+      <!-- This next tag will later be filled in using innerHTML -->
+      <span id="inputPayStatus" class="info">{{ paymentStatus }}</span>
+    </div>
+    
     <div id="PayAmt" class="card3">
       <span class="field">Next Payment Amount</span> <br />
       <!-- This next tag will later be filled in using innerHTML -->
@@ -21,9 +23,9 @@
     </div>
 
     <div id="PayDate" class="card3">
-      <span class="field">Next Payment Date</span> <br />
+      <span class="field">Next Payment Due Date</span> <br />
       <!-- This next tag will later be filled in using innerHTML -->
-      <span id="inputPayDate" class="info">{{ nextPaymentDate }}</span>
+      <span id="inputPayDate" class="info">{{ nextPaymentDueDate }}</span>
     </div>
 
     <div id="ContractEndDate" class="card3">
@@ -38,6 +40,15 @@
       <span id="tenantName" class="info">{{ tenantName }}</span> <br />
       <span id="tenantEmail" class="field">{{ tenantEmail }}</span> <br />
       <span id="tenantPhone" class="field">{{ tenantPhone }}</span>
+    </div>
+
+    <div id="Action" class="card3">
+        <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
+        <div v-else id="flexbutt">
+            <RouterLink :to="'/addtenant' + PropID">
+              <button class="button2">View</button>
+            </RouterLink>
+          </div>
     </div>
   </div>
 </template>
@@ -55,23 +66,23 @@ const db = getFirestore(firebaseApp);
 export default {
   data() {
     return {
-      PropAddress: "",
-      nextPaymentAmount: "",
-      nextPaymentDate: "",
-      contractEndDate: "",
-      tenantName: "",
-      tenantEmail: "",
-      tenantPhone: "",
+        PaymentId: "",
+        PropertyId: "",
+        PropAddress: "",
+        paymentStatus: "",
+        nextPaymentAmount: "",
+        nextPaymentDueDate: "",
+        contractEndDate: "",
+        tenantName: "",
+        tenantEmail: "",
+        tenantPhone: "",
     };
   },
 
   async mounted() {
     const auth = getAuth();
     this.useremail = auth.currentUser.email;
-    // In future, Probably need to get data from
-    // For now, set tempPropertyID as a constant, but you should replace this
-    // with a variable that holds the property ID obtained from the previous page
-    // - component (ActiveContracts.vue) from PropertyView
+    // New part for router
     const route = useRoute();
     const ContractId = route.params.ContractId;
     // const ContractId = "O6LZIsxeNBl5ajNf45QV";
@@ -79,58 +90,40 @@ export default {
   },
 
   methods: {
-    /* Parse in parameters: Property Owner's Email, propertyID to get:
-    - From Property Collection: property_address
-    - From Contract Collection:
-        - Contract.RentalCost (nextPaymentAmount)
-        - Contract.EndDate (contractEndDate)
-        - Contract.tenant_email (tenantEmail) ---> (Document PK/ID of each Tenant document) -> use to get tenant info
-        - Contract.contractID (Document PK/ID of each Contract) use this to get due date
-    - Use contractID to get Payment.dueDate (nextPaymentDate)
-    - Use tenantEmail to get
-        - Tenant.tenant_name: tenantName
-        - Tenant.tenant_phone: tenantPhone
-    */
-
     async fetchAndUpdateData(useremail, ContractId) {
       // Get the Contract details using ContractId
       const contractDocRef = doc(db, "Contract", ContractId);
       const contractDoc = await getDoc(contractDocRef);
       const contractData = contractDoc.data();
-      this.tenantEmail = contractData.tenantEmail;
-      const PropertyId = contractData.PropertyId;
+      this.tenantEmail = contractData.TenantEmail;
+      this.PaymentId = contractData.PaymentId;
+      this.PropertyId = contractData.PropertyId;
       this.nextPaymentAmount = contractData.RentalCost;
       this.contractEndDate = contractData.EndDate.toDate().toLocaleDateString();
 
-      // Comparison of curren date
+      // Comparison of current date
       console.log(new Date().toLocaleString());
       console.log(this.contractEndDate >= new Date().toLocaleString());
 
       // Get the Property details using PropertyId
-      const propertyDocRef = doc(db, "Property", PropertyId);
+      const propertyDocRef = doc(db, "Property", this.PropertyId);
       const propertyDoc = await getDoc(propertyDocRef);
       const propertyData = propertyDoc.data();
       this.PropAddress = propertyData.PropAddress;
 
-      //   // Get the payment due date using the contract ID
-      //   const paymentQuery = query(
-      //     collection(db, "Payment"),
-      //     where("ContractId", "==", ContractID)
-      //   );
-      //   const paymentQuerySnapshot = await getDocs(paymentQuery);
+      // Get Tenant Details using TenantEmail
+      const tenantDocRef = doc(db, "Tenant", this.tenantEmail);
+      const tenantDoc = await getDoc(tenantDocRef);
+      const tenantData = tenantDoc.data();
+      this.tenantName = tenantData.Name;
+      this.tenantPhone = tenantData.Phone;
 
-      //   // const paymentQuerySnapshot = await db.collection('Payment').where('ContractID', '==', contractID).get();
-      //   if (paymentQuerySnapshot.empty) {
-      //     console.log("No matching Payment documents.");
-      //     return;
-      //   }
-
-      //   // Get the first matching payment document
-      //   const paymentDoc = paymentQuerySnapshot.docs[0];
-      //   this.nextPaymentDate = paymentDoc
-      //     .data()
-      //     .dueDate.toDate()
-      //     .toLocaleDateString();
+      // Get Payment Details using TenantEmail
+      const paymentDocRef = doc(db, "Payment", this.PaymentId);
+      const paymentDoc = await getDoc(paymentDocRef);
+      const paymentData = paymentDoc.data();
+      this.paymentStatus = paymentData.Status;
+      this.nextPaymentDueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
     },
   },
 };
@@ -141,9 +134,11 @@ export default {
   display: grid;
   grid-gap: 20px;
   grid-template:
+    "a f f f f f f"
     "a b b c c d d"
     "a e e e e e e"
-    "a e e e e e e";
+    "a e e e e e e"
+    "a g g g g g g";
 }
 
 #Prop {
@@ -165,6 +160,13 @@ export default {
 
 #Tenant {
   grid-area: e;
+}
+
+#PayStatus {
+  grid-area: f;
+}
+#Action {
+    grid-area: g;
 }
 
 .card3 {
