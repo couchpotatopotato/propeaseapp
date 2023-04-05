@@ -8,7 +8,7 @@
 <style scoped>
 .about {
   margin-left: 15%;
-  margin-top: 18%;
+  margin-top: 15%;
   font-weight: 700;
   font-size: 100px;
 }

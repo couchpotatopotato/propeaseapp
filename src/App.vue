@@ -46,7 +46,7 @@ export default {
 
     <div id="pagecomponent">
       <RouterView v-slot="{ Component }">
-        <transition name="fade">
+        <transition name="scale" mode="out-in">
           <component :is="Component" />
         </transition>
       </RouterView>
@@ -55,6 +55,15 @@ export default {
 </template>
 
 <style scoped>
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.5s ease;
+}
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
 #pagecomponent {
   margin: 0 150px 150px 100px;
 }
