@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <div class="about">Profile</div>
     <ViewProfile @showEdit="showEditFunc($event)" v-if="showView" />
     <EditProfile @showView="showViewFunc($event)" v-if="showEdit" />
