@@ -19,35 +19,21 @@
       <td v-if="row.ownerEmail === useremail">{{ row.message }}</td>
       <td v-if="row.ownerEmail === useremail">
         <div id="flexbutt">
-          <RouterLink to="/indivcontract">
-            <button class="button2">View</button>
+          <RouterLink :to="'indivcontract/' + row.contractId">
+            <button class="button button2">View</button>
           </RouterLink>
-          <button id="clear" class="button2">Clear</button>
+          <button id="clear" class="button button2" @click="clear(row.notifId)">Clear</button>
         </div>
       </td>
     </tr>
 
   </table>
   <br /><br />
-
-  <div class="flexcontainer">
-    <RouterLink to="/approvepayment">
-      <button class="button button2">Approve Payment</button>
-    </RouterLink>
-  </div>
 </template>
 
 <script>
 import firebaseApp from "@/firebase.js";
-import {
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  deleteDoc,
-  getFirestore,
-} from "firebase/firestore";
-
+import { collection, getDocs, getDoc, doc, getFirestore, deleteDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
@@ -61,7 +47,14 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser; // owner email
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
     await this.fetchAndUpdateData(this.useremail);
   },
 
@@ -76,7 +69,7 @@ export default {
       this.tableRows = await Promise.all(
         allDocuments.docs.map(async (documents) => {
           let documentData = documents.data();
-          console.log(documentData);
+          let notifId = documents.id;
           let contractId = documentData.ContractId;
           let ownerEmail = documentData.OwnerEmail;
           let tenantEmail = documentData.TenantEmail;
@@ -85,24 +78,23 @@ export default {
           // Accessing Contract details
           const contractRef = doc(db, "Contract", contractId);
           const contractDetails = await getDoc(contractRef);
-          console.log(contractDetails.data());
           let propId = contractDetails.data().PropertyId;
 
           // Accessing Property details
           const propRef = doc(db, "Property", propId);
           const propDetails = await getDoc(propRef);
-          console.log(propDetails.data());
           let propAddress = propDetails.data().PropAddress;
 
           // Accessing Tenant details
           const tenantRef = doc(db, "Tenant", tenantEmail);
           const tenantDetails = await getDoc(tenantRef);
-          console.log(tenantDetails.data());
           let tenantName = tenantDetails.data().Name;
 
-          console.log(useremail);
+          console.log("notif", notifId, "retrieved")
 
           return {
+            notifId,
+            contractId,
             ownerEmail,
             propAddress,
             tenantName,
@@ -110,6 +102,19 @@ export default {
           };
         })
       );
+    },
+
+    async clear(notifId) {
+      // to clear notification
+      alert("Clearing Notification")
+      try{
+        await deleteDoc(doc(db, "Notification", notifId));
+        this.$emit("notification cleared");
+        this.$router.go(0);
+      }
+      catch(error) {
+        console.error("Error executing clear", error)
+      }
     },
   },
 };
@@ -133,5 +138,21 @@ td,th {
   text-align: left;
   padding: 2px 15px 2px 15px;
   line-height: 50px;
+}
+
+.button2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+}
+
+#flexbutt {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
 }
 </style>
