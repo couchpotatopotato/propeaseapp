@@ -40,7 +40,7 @@ const router = createRouter({
       component: () => import("../views/NotifView.vue"),
     },
     {
-      path: "/approvepayment",
+      path: "/approvepayment/:PaymentId",
       name: "approvepayment",
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route

@@ -1,30 +1,30 @@
 <template>
     <div class="card">
         <div id="Prop" class="card2">
-            <img id="img1" src="src/components/Property/AddPropImg.jpeg" alt="Card Image">
-            <span id="inputAddress">Address</span>
+            <img id="img1" src="@/components/Property/AddPropImg.jpeg" alt="Card Image">
+            <span id="inputAddress">{{ Address }}</span>
         </div>
 
         <div id="PayAmt" class="card2">
             <span class="field">Payment Amount</span> <br>
-            <span id="inputPayAmt" class="info">PaymentAmount</span>
+            <span id="inputPayAmt" class="info">{{ PaymentAmount }}</span>
         </div>
 
         <div id="PayDate" class="card2">
             <span class="field">Payment Date</span> <br>
-            <span id="inputPayDate" class="info">PaymentDate</span>
+            <span id="inputPayDate" class="info">{{ PaymentDate }}</span>
         </div>
 
         <div id="PayMode" class="card2">
             <span class="field">Payment Mode</span> <br>
-            <span id="inputPayMode" class="info">PaymentMode</span>
+            <span id="inputPayMode" class="info">{{ PaymentMode }}</span>
         </div>
 
         <div id="Tenant" class="card2">
             <span class="field">Tenant</span> <br>
-            <span id="tenantName" class="info">Name</span> <br>
-            <span id="tenantEmail" class="field">Email</span> <br>
-            <span id="tenantPhone" class="field">Phone</span>
+            <span id="tenantName" class="info">{{ TenantName }}</span> <br>
+            <span id="tenantEmail" class="field">{{ TenantEmail }}</span> <br>
+            <span id="tenantPhone" class="field">{{ TenantPhone }}</span>
         </div>
 
         <div id="Approve">
@@ -42,15 +42,37 @@
 import firebaseApp from '@/firebase.js';
 import{ getFirestore } from "firebase/firestore";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { useRoute } from "vue-router";
 
 const db = getFirestore(firebaseApp);
-const paymentID = "cDqgxaHQNX1yeVxFtRb9"; //to be edited
 
 export default {
-    mounted() {
-        async function display() {
+    data() {
+        return {
+            Address: "",
+            PaymentAmount: "",
+            PaymentDate: "",
+            PaymentMode: "",
+            TenantName: "",
+            TenantEmail: "",
+            TenantPhone: "",
+        };
+    },
+
+    async mounted() {
+        const auth = getAuth();
+        this.useremail = auth.currentUser; // owner email
+        // New part for router
+        const route = useRoute();
+        const PaymentId = route.params.PaymentId;
+        await this.fetchAndUpdateData(PaymentId);
+    },
+
+    methods: {
+        async fetchAndUpdateData(paymentId) {
             // get payment data
-            let paymentRef = doc(db, "Payment", paymentID);
+            let paymentRef = doc(db, "Payment", paymentId);
             let paymentSnap = await getDoc(paymentRef);
             if (paymentSnap.exists()) {
                 console.log("Payment Document data:", paymentSnap.data());
@@ -61,9 +83,9 @@ export default {
             let paymentData = paymentSnap.data();
 
             // get contract data
-            let contractID = paymentData.ContractID;
-            console.log("contractID:", contractID);
-            let contractRef = doc(db, "Contract", contractID);
+            let contractId = paymentData.ContractId;
+            console.log("contractId:", contractId);
+            let contractRef = doc(db, "Contract", contractId);
             let contractSnap = await getDoc(contractRef);
             if (contractSnap.exists()) {
                 console.log("Contract Document data:", contractSnap.data());
@@ -74,8 +96,8 @@ export default {
             let contractData = contractSnap.data();
 
             // get property data
-            let propertyID = contractData.PropertyID;
-            let propertyRef = doc(db, "Property", propertyID);
+            let propertyId = contractData.PropertyId;
+            let propertyRef = doc(db, "Property", propertyId);
             let propertySnap = await getDoc(propertyRef);
             if (propertySnap.exists()) {
                 console.log("Property Document data:", propertySnap.data());
@@ -86,8 +108,9 @@ export default {
             let propertyData = propertySnap.data();
 
             // get tenant data
-            let tenantID = contractData.TenantID;
-            let tenantRef = doc(db, "Tenant", tenantID);
+            let tenantEmail = contractData.TenantEmail; // tenantEmail used as ID
+            console.log(tenantEmail);
+            let tenantRef = doc(db, "Tenant", tenantEmail);
             let tenantSnap = await getDoc(tenantRef);
             if (tenantSnap.exists()) {
                 console.log("Tenant Document data:", tenantSnap.data());
@@ -98,18 +121,15 @@ export default {
             let tenantData = tenantSnap.data();
             
             //
-            document.getElementById("inputAddress").innerHTML = propertyData.Address;
-            document.getElementById("inputPayAmt").innerHTML = contractData.RentalCost;
-            document.getElementById("inputPayDate").innerHTML = paymentData.Date.toDate().toLocaleDateString();
-            document.getElementById("inputPayMode").innerHTML = paymentData.Mode;
-            document.getElementById("tenantName").innerHTML = tenantData.Name;
-            document.getElementById("tenantEmail").innerHTML = tenantData.Email; 
-            document.getElementById("tenantPhone").innerHTML = tenantData.Phone;
-        }
-        display();
-    },
+            this.Address = propertyData.PropAddress;
+            this.PaymentAmount = "$" + contractData.RentalCost;
+            this.PaymentDate = paymentData.PaymentDate.toDate().toLocaleDateString();
+            this.PaymentMode = paymentData.Mode;
+            this.TenantName = tenantData.Name;
+            this.TenantEmail = tenantEmail; 
+            this.TenantPhone = tenantData.Phone;
+        },
 
-    methods: {
         async approve() {
             // to update payment status to "Paid"
             alert("Approving Payment Claim");
@@ -119,6 +139,9 @@ export default {
                     "Status": "Paid"
                 });
                 this.$emit("approved");
+
+                //add new payment doc where due date is + 1 month
+                
             }
             catch(error) {
                 console.error("Error executing approval", error)

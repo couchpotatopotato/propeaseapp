@@ -176,7 +176,7 @@ export default {
           });
           break;
         case 'Pending':
-          this.$router.push('/approvepayment');
+          this.$router.push('/approvepayment/' + this.PaymentId);
           break;
         case 'Paid':
           this.$router.push('/property');
