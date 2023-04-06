@@ -43,13 +43,14 @@
     </div>
 
     <div id="Action" class="card3">
-        <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
-        <div v-else id="flexbutt">
-          <!-- In future, need to edit the router link later to go to individual approve payment page -->
-            <RouterLink :to="'/approvepayment'">
-              <button class="button2">View</button>
-            </RouterLink>
-          </div>
+      <button
+      v-bind:class="{
+        unpaid: isUnpaid,
+        overdue: isOverdue,
+        pending: isPending,
+        paid: isPaid,
+      }"
+      v-on:click="toggleState"> {{ computedButtonText }} </button>
     </div>
   </div>
 </template>
@@ -58,7 +59,7 @@
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc, getDocs, addDoc } from "firebase/firestore";
 import { query, where, collection } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
@@ -73,11 +74,36 @@ export default {
         paymentStatus: "",
         nextPaymentAmount: "",
         nextPaymentDueDate: "",
+        prevPaymentDueDate: "",
         contractEndDate: "",
         tenantName: "",
         tenantEmail: "",
         tenantPhone: "",
+        buttonTexts: {
+          Unpaid: 'Remind Tenant',
+          Overdue: 'Remind Tenant',
+          Pending: 'Approve Payment',
+          Paid: 'Back',
+        },
     };
+  },
+
+  computed: {
+    isUnpaid() {
+      return this.paymentStatus === 'Unpaid';
+    },
+    isOverdue() {
+      return this.paymentStatus === 'Overdue';
+    },
+    isPending() {
+      return this.paymentStatus === 'Pending';
+    },
+    isPaid() {
+      return this.paymentStatus === 'Paid';
+    },
+    computedButtonText() {
+      return this.buttonTexts[this.paymentStatus];
+    },
   },
 
   async mounted() {
@@ -124,7 +150,40 @@ export default {
       const paymentData = paymentDoc.data();
       this.paymentStatus = paymentData.Status;
       this.nextPaymentDueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
+      this.prevPaymentDueDate = paymentData.PrevDueDate.toDate().toLocaleDateString();
     },
+
+    toggleState() {
+      switch (this.paymentStatus) {
+        case 'Unpaid':
+          this.$router.push('/property');
+          addDoc(collection(db, "Notification"), {
+            ContractId: this.$route.params.ContractId,
+            Date: new Date().toLocaleDateString(),
+            Message: "You have an upcoming payment on " + this.nextPaymentDueDate + "!",
+            OwnerEmail: this.useremail,
+            TenantEmail: this.tenantEmail
+          });
+          break;
+        case 'Overdue':
+          this.$router.push('/property');
+          addDoc(collection(db, "Notification"), {
+            ContractId: this.$route.params.ContractId,
+            Date: new Date().toLocaleDateString(),
+            Message: "You have an overdue payment dated " + this.prevPaymentDueDate + "!",
+            OwnerEmail: this.useremail,
+            TenantEmail: this.tenantEmail
+          });
+          break;
+        case 'Pending':
+          this.$router.push('/approvepayment');
+          break;
+        case 'Paid':
+          this.$router.push('/property');
+          break;
+      }
+    },
+
   },
 };
 </script>
@@ -175,6 +234,7 @@ export default {
   border-radius: 5px; /* 5px rounded corners */
   background-color: var(--color-background);
   padding: 15px 0px 15px 0px;
+  width: auto;
 }
 
 #img1 {
@@ -196,4 +256,18 @@ span {
   font-weight: bold;
   color: var(--color-darkblue);
 }
+
+.unpaid {
+  background-color: blue;
+  color: white;
+}
+.pending {
+  background-color: green;
+  color: white;
+}
+.overdue {
+  background-color: red;
+  color: white;
+}
+
 </style>
