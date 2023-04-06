@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <div class="about">View Contract Details</div>
     <IndivContract />
     <div class="about">Contract Payment History</div>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <div class="about">Property</div>
     <PropListing /><br /><br />
     <ActiveContracts /><br /><br />

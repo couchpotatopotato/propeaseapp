@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <div class="about">Approve Payment</div>
     <ApprovePayment />
   </div>
