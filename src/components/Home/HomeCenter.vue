@@ -30,7 +30,8 @@
 }
 
 #maincontainer {
-  margin-left: 15%;
+  /*margin-left: 15%;*/
+  margin-left: 10%;
   margin-top: 3%;
 }
 

@@ -74,7 +74,7 @@ export default {
 
 .register-photo {
   background: #f1f7fc;
-  padding: 150px 150px;
+  padding: 70px 0px;
 }
 
 .register-photo .image-holder {

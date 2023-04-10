@@ -1,12 +1,15 @@
 <script>
+import firebaseApp from "@/firebase.js";
 import { RouterLink, RouterView } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getFirestore, getDoc, doc } from 'firebase/firestore';
 
 export default {
   name: "App",
   data() {
     return {
       user: false,
+      userType: "",
     };
   },
   mounted() {
@@ -15,6 +18,29 @@ export default {
       if (user) {
         this.user = user;
         console.log(this.user);
+
+        // determine whether the user is an Owner or a Tenant
+        const db = getFirestore(firebaseApp);
+        const docRef = doc(db, "Owner", auth.currentUser.email);
+        getDoc(docRef)
+          .then((doc) => {
+            if (doc.exists()) {
+              // the user is an Owner
+              this.userType = "Owner";
+            } else {
+              // the user is a Tenant
+              this.userType = "Tenant";
+            }
+            console.log(this.userType);
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+          });
+      } else {
+        this.user = user;
+        console.log(this.user);
+        this.userType = "";
+        console.log(this.userType);
       }
     });
   },
@@ -32,7 +58,7 @@ export default {
 
 <template>
   <div>
-    <header v-if="user">
+    <header v-show="user && userType == 'Owner'">
       <!-- hide when not login -->
       <nav>
         <RouterLink to="/home">Home</RouterLink>
@@ -43,15 +69,34 @@ export default {
         <button id="logoutBtn" @click="signOut()">Logout</button>
       </nav>
     </header>
-    <br />
 
-    <div id="pagecomponent">
+    <header v-show="user && userType == 'Tenant'">
+      <!-- hide when not login -->
+      <nav>
+        <RouterLink to="/home">Home</RouterLink>
+        <RouterLink to="/notif">Notification</RouterLink>
+        <RouterLink to="/rental">Rental</RouterLink>
+        <RouterLink to="/browse">Browse</RouterLink>
+        <RouterLink to="/profile">Profile</RouterLink>
+        <button id="logoutBtn" @click="signOut()">Logout</button>
+      </nav>
+    </header>
+
+    <!--<br v-show="user"/>-->
+
+    <div id="pagecomponent" v-show="user">
       <RouterView v-slot="{ Component }">
         <transition name="scale" mode="out-in">
           <component :is="Component" />
         </transition>
       </RouterView>
     </div>
+
+    <RouterView v-slot="{ Component }" v-show="!user" style="margin: 0 0 -20px 0">
+      <transition name="scale" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </RouterView>
   </div>
 </template>
 
