@@ -1,39 +1,12 @@
 <template>
-    <div class="card">
-        <div id="Prop" class="card3">
-            <img id="img1" src="@/components/Property/AddPropImg.jpeg" alt="Card Image">
-            <span id="inputAddress">{{ Address }}</span>
-        </div>
-
-        <div id="PayAmt" class="card2">
-            <span class="field">Payment Amount</span> <br>
-            <span id="inputPayAmt" class="info">{{ PaymentAmount }}</span>
-        </div>
-
-        <div id="PayDate" class="card2">
-            <span class="field">Payment Date</span> <br>
-            <span id="inputPayDate" class="info">{{ PaymentDate }}</span>
-        </div>
-
-        <div id="PayMode" class="card2">
-            <span class="field">Payment Mode</span> <br>
-            <span id="inputPayMode" class="info">{{ PaymentMode }}</span>
-        </div>
-
-        <div id="Tenant" class="card3">
-            <span class="field">Tenant</span> <br>
-            <span id="tenantName" class="info">{{ TenantName }}</span> <br>
-            <span id="tenantEmail" class="field">{{ TenantEmail }}</span> <br>
-            <span id="tenantPhone" class="field">{{ TenantPhone }}</span>
-        </div>
-
-        <div id="Approve">
-                <button id="approvebtn" class="button button2" v-on:click="approve">Approve</button>
-        </div>
-
-        <div id="Reject">
-                <button id="rejectbtn" class="button" v-on:click="reject">Reject</button>
-        </div>
+  <div class="card">
+    <div id="Prop" class="card3">
+      <img
+        id="img1"
+        src="@/components/Property/AddPropImg.jpeg"
+        alt="Card Image"
+      />
+      <span id="inputAddress">{{ Address }}</span>
     </div>
 
     <div id="PayAmt" class="card2">
@@ -51,7 +24,7 @@
       <span id="inputPayMode" class="info">{{ PaymentMode }}</span>
     </div>
 
-    <div id="Tenant" class="card2">
+    <div id="Tenant" class="card3">
       <span class="field">Tenant</span> <br />
       <span id="tenantName" class="info">{{ TenantName }}</span> <br />
       <span id="tenantEmail" class="field">{{ TenantEmail }}</span> <br />
@@ -74,164 +47,162 @@
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { useRoute } from "vue-router";
 
 const db = getFirestore(firebaseApp);
 
 export default {
-    data() {
-        return {
-            Address: "",
-            PaymentAmount: "",
-            PaymentDate: "",
-            PaymentMode: "",
-            TenantName: "",
-            TenantEmail: "",
-            TenantPhone: "",
-            ContractId: "",
-            useremail: ""
+  data() {
+    return {
+      Address: "",
+      PaymentAmount: "",
+      PaymentDate: "",
+      PaymentMode: "",
+      TenantName: "",
+      TenantEmail: "",
+      TenantPhone: "",
+      ContractId: "",
+      useremail: "",
+    };
+  },
+
+  async mounted() {
+    const auth = getAuth();
+    this.useremail = auth.currentUser; // owner email
+    // New part for router
+    const route = useRoute();
+    const PaymentId = route.params.PaymentId;
+    await this.fetchAndUpdateData(PaymentId);
+  },
+
+  methods: {
+    async fetchAndUpdateData(paymentId) {
+      // get payment data
+      let paymentRef = doc(db, "Payment", paymentId);
+      let paymentSnap = await getDoc(paymentRef);
+      if (paymentSnap.exists()) {
+        console.log("Payment Document data:", paymentSnap.data());
+      } else {
+        // paymentSnap.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      let paymentData = paymentSnap.data();
+
+      // get contract data
+      this.ContractId = paymentData.ContractId;
+      console.log("contractId:", this.ContractId);
+      let contractRef = doc(db, "Contract", this.ContractId);
+      let contractSnap = await getDoc(contractRef);
+      if (contractSnap.exists()) {
+        console.log("Contract Document data:", contractSnap.data());
+      } else {
+        // contractSnap.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      let contractData = contractSnap.data();
+
+      // get property data
+      let propertyId = contractData.PropertyId;
+      let propertyRef = doc(db, "Property", propertyId);
+      let propertySnap = await getDoc(propertyRef);
+      if (propertySnap.exists()) {
+        console.log("Property Document data:", propertySnap.data());
+      } else {
+        // propertySnap.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      let propertyData = propertySnap.data();
+
+      // get tenant data
+      let tenantEmail = contractData.TenantEmail; // tenantEmail used as ID
+      console.log(tenantEmail);
+      let tenantRef = doc(db, "Tenant", tenantEmail);
+      let tenantSnap = await getDoc(tenantRef);
+      if (tenantSnap.exists()) {
+        console.log("Tenant Document data:", tenantSnap.data());
+      } else {
+        // tenantSnap.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      let tenantData = tenantSnap.data();
+
+      //
+      this.Address = propertyData.PropAddress;
+      this.PaymentAmount = "$" + contractData.RentalCost;
+      this.PaymentDate = paymentData.PaymentDate.toDate().toLocaleDateString();
+      this.PaymentMode = paymentData.Mode;
+      this.TenantName = tenantData.Name;
+      this.TenantEmail = tenantEmail;
+      this.TenantPhone = tenantData.Phone;
+    },
+
+    async approve() {
+      // to update payment status to "Paid"
+      alert("Approving Payment Claim");
+      try {
+        const paymentDocRef = doc(db, "Payment", paymentID);
+        await updateDoc(paymentDocRef, {
+          Status: "Paid",
+        });
+        this.$emit("approved");
+
+        // add payment to pay history
+
+        // reset pay document for next payment, or delete if contract is over
+      } catch (error) {
+        console.error("Error executing approval", error);
+      }
+    },
+
+    async reject() {
+      alert("Rejecting Payment Claim");
+      try {
+        // to update payment status to "Paid"
+        const paymentDocRef = doc(db, "Payment", paymentID);
+        const paymentSnap = await getDoc(paymentDocRef);
+        const paymentData = paymentSnap.data();
+        const dueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
+
+        Date.prototype.today = function () {
+          return (
+            (this.getDate() < 10 ? "0" : "") +
+            this.getDate() +
+            "/" +
+            (this.getMonth() + 1 < 10 ? "0" : "") +
+            (this.getMonth() + 1) +
+            "/" +
+            this.getFullYear()
+          );
         };
-    },
-
-    async mounted() {
-        const auth = getAuth();
-        this.useremail = auth.currentUser; // owner email
-        // New part for router
-        const route = useRoute();
-        const PaymentId = route.params.PaymentId;
-        await this.fetchAndUpdateData(PaymentId);
-    },
-
-    methods: {
-        async fetchAndUpdateData(paymentId) {
-            // get payment data
-            let paymentRef = doc(db, "Payment", paymentId);
-            let paymentSnap = await getDoc(paymentRef);
-            if (paymentSnap.exists()) {
-                console.log("Payment Document data:", paymentSnap.data());
-            } else {
-                // paymentSnap.data() will be undefined in this case
-                console.log("No such document!");
-            }
-            let paymentData = paymentSnap.data();
-
-            // get contract data
-            this.ContractId = paymentData.ContractId;
-            console.log("contractId:", this.ContractId);
-            let contractRef = doc(db, "Contract", this.ContractId);
-            let contractSnap = await getDoc(contractRef);
-            if (contractSnap.exists()) {
-                console.log("Contract Document data:", contractSnap.data());
-            } else {
-                // contractSnap.data() will be undefined in this case
-                console.log("No such document!");
-            }
-            let contractData = contractSnap.data();
-
-            // get property data
-            let propertyId = contractData.PropertyId;
-            let propertyRef = doc(db, "Property", propertyId);
-            let propertySnap = await getDoc(propertyRef);
-            if (propertySnap.exists()) {
-                console.log("Property Document data:", propertySnap.data());
-            } else {
-                // propertySnap.data() will be undefined in this case
-                console.log("No such document!");
-            }
-            let propertyData = propertySnap.data();
-
-            // get tenant data
-            let tenantEmail = contractData.TenantEmail; // tenantEmail used as ID
-            console.log(tenantEmail);
-            let tenantRef = doc(db, "Tenant", tenantEmail);
-            let tenantSnap = await getDoc(tenantRef);
-            if (tenantSnap.exists()) {
-                console.log("Tenant Document data:", tenantSnap.data());
-            } else {
-                // tenantSnap.data() will be undefined in this case
-                console.log("No such document!");
-            }
-            let tenantData = tenantSnap.data();
-            
-            //
-            this.Address = propertyData.PropAddress;
-            this.PaymentAmount = "$" + contractData.RentalCost;
-            this.PaymentDate = paymentData.PaymentDate.toDate().toLocaleDateString();
-            this.PaymentMode = paymentData.Mode;
-            this.TenantName = tenantData.Name;
-            this.TenantEmail = tenantEmail; 
-            this.TenantPhone = tenantData.Phone;
-        },
-
-        async approve() {
-            // to update payment status to "Paid"
-            alert("Approving Payment Claim");
-            try{
-                const paymentDocRef = doc(db, "Payment", paymentID);
-                await updateDoc(paymentDocRef, {
-                    "Status": "Paid"
-                });
-                this.$emit("approved");
-
-                // add payment to pay history
-
-                // reset pay document for next payment, or delete if contract is over
-                
-            }
-            catch(error) {
-                console.error("Error executing approval", error)
-            }
-        },
-
-        async reject() {
-            alert("Rejecting Payment Claim");
-            try{
-                // to update payment status to "Paid"
-                const paymentDocRef = doc(db, "Payment", paymentID);
-                const paymentSnap = await getDoc(paymentDocRef);
-                const paymentData = paymentSnap.data();
-                const dueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
-
-                Date.prototype.today = function () { 
-                    return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth()+1) < 10)?"0":"") 
-                            + (this.getMonth()+1) +"/"+ this.getFullYear();
-                }
-                const currDate = new Date().today();
-                console.log("Current Date: ", currDate)
-                let newStatus = paymentData.Status;
-                if (currDate <= dueDate) {
-                    newStatus = "Unpaid";
-                } else {
-                    newStatus = "Overdue";
-                }
-                console.log(paymentData)
-
-                await updateDoc(paymentDocRef, {
-                    "Status": newStatus
-                });
-
-                // to send notif to tenant that payment has been rejected
-                let date = new Date().toLocaleDateString()
-                addDoc(collection(db, "Notification"), {
-                    ContractId: this.ContractId,
-                    Date: date,
-                    Message: "Your payment claim of" + this.PaymentAmount + "on" + this.PaymentDate + "has been rejected.",
-                    OwnerEmail: this.useremail,
-                    TenantEmail: this.TenantEmail,
-                    Receiver: "Tenant"
-                });
-
-                this.$emit("rejected");
-            }
-            catch(error) {
-                console.error("Error executing rejection", error)
-            }
+        const currDate = new Date().today();
+        console.log("Current Date: ", currDate);
+        let newStatus = paymentData.Status;
+        if (currDate <= dueDate) {
+          newStatus = "Unpaid";
+        } else {
+          newStatus = "Overdue";
         }
         console.log(paymentData);
 
         await updateDoc(paymentDocRef, {
           Status: newStatus,
+        });
+
+        // to send notif to tenant that payment has been rejected
+        let date = new Date().toLocaleDateString();
+        addDoc(collection(db, "Notification"), {
+          ContractId: this.ContractId,
+          Date: date,
+          Message:
+            "Your payment claim of" +
+            this.PaymentAmount +
+            "on" +
+            this.PaymentDate +
+            "has been rejected.",
+          OwnerEmail: this.useremail,
+          TenantEmail: this.TenantEmail,
+          Receiver: "Tenant",
         });
 
         this.$emit("rejected");
@@ -283,20 +254,20 @@ export default {
 }
 
 .card3 {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
-    border-radius: 5px; /* 5px rounded corners */
-    background-color: var(--color-background);
-    padding: 15px 0px 15px 0px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+  background-color: var(--color-background);
+  padding: 15px 0px 15px 0px;
 }
 
 .card2 {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
-    border-radius: 5px; /* 5px rounded corners */
-    background-color: var(--color-background);
-    padding: 15px 0px 15px 0px;
-    text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+  background-color: var(--color-background);
+  padding: 15px 0px 15px 0px;
+  text-align: center;
 }
 
 #img1 {
