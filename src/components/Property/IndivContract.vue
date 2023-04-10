@@ -71,6 +71,7 @@ const db = getFirestore(firebaseApp);
 export default {
   data() {
     return {
+      ContractId: "",
       PaymentId: "",
       PropertyId: "",
       PropAddress: "",
@@ -122,8 +123,8 @@ export default {
 
     // New part for router
     const route = useRoute();
-    const ContractId = route.params.ContractId;
-    await this.fetchAndUpdateData(this.useremail, ContractId);
+    this.ContractId = route.params.ContractId;
+    await this.fetchAndUpdateData(this.useremail, this.ContractId);
   },
 
   methods: {
@@ -174,11 +175,12 @@ export default {
             ContractId: this.$route.params.ContractId,
             Date: new Date().toLocaleDateString(),
             Message:
-              "You have an upcoming payment on " +
+              "Owner: You have an upcoming payment on " +
               this.nextPaymentDueDate +
               "!",
             OwnerEmail: this.useremail,
             TenantEmail: this.tenantEmail,
+            Receiver: "Tenant",
           });
           break;
         case "Overdue":
@@ -187,11 +189,12 @@ export default {
             ContractId: this.$route.params.ContractId,
             Date: new Date().toLocaleDateString(),
             Message:
-              "You have an overdue payment dated " +
+              "Owner: You have an overdue payment dated " +
               this.prevPaymentDueDate +
               "!",
             OwnerEmail: this.useremail,
             TenantEmail: this.tenantEmail,
+            Receiver: "Tenant",
           });
           break;
         case "Pending":
