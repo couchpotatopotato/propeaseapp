@@ -66,7 +66,15 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
     await this.fetchAndUpdateData(this.useremail);
   },
 

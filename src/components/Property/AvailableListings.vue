@@ -25,7 +25,12 @@
             <RouterLink :to="'addtenant/' + row.PropertyId">
               <button class="button button2">AddContract</button>
             </RouterLink>
-            <button class="button button2" @click="deleteProperty(row.PropertyId)">Delete</button>
+            <button
+              class="button button2"
+              @click="deleteProperty(row.PropertyId)"
+            >
+              Delete
+            </button>
           </div>
         </td>
       </tr>
@@ -57,7 +62,15 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
     await this.fetchAndUpdateData(this.useremail);
   },
 
@@ -90,11 +103,13 @@ export default {
     },
 
     async deleteProperty(PropertyId) {
-      alert("You are going to delete this property!")
+      alert("You are going to delete this property!");
       await deleteDoc(doc(db, "Property", PropertyId));
-      console.log("Deleted Document successfully, PropertyId is : " + PropertyId);
+      console.log(
+        "Deleted Document successfully, PropertyId is : " + PropertyId
+      );
       // ONLY PROBLEM NOW IS THAT IT DOESN'T REFRESH
-    }
+    },
   },
 };
 </script>

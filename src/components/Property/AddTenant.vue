@@ -1,36 +1,38 @@
 <template>
-    <div class="card">
-      <figure>
-        <img src="@/components/Property/AddPropImg.jpeg" alt="Image description">
-        <figcaption>Property Address</figcaption>
-      </figure>
-      <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
+  <div class="card">
+    <figure>
+      <img
+        src="@/components/Property/AddPropImg.jpeg"
+        alt="Image description"
+      />
+      <figcaption>Property Address</figcaption>
+    </figure>
+    <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
       <h5> Property Address </h5> -->
-      <div class="form-group">
-        <label for="tenant_email">Tenant Email:</label>
-        <input type="text" id="input1" v-model="tenant_email" />
-        <label for="rental">Monthly Rental Cost:</label>
-        <input type="text" id="input2" v-model="rental" />
-        <label for="first_pay_date">First Payment Date:</label>
-        <input type="text" id="input3" v-model="first_pay_date" />
-        <label for="last_pay_date">Number of Payment Months</label>
-        <input type="text" id="input4" v-model="num_payment_months" />
-        <RouterLink to="/property">
-          <button type="add" @click="saveCard">Add</button>
-        </RouterLink>
-      </div>
+    <div class="form-group">
+      <label for="tenant_email">Tenant Email:</label>
+      <input type="text" id="input1" v-model="tenant_email" />
+      <label for="rental">Monthly Rental Cost:</label>
+      <input type="text" id="input2" v-model="rental" />
+      <label for="first_pay_date">First Payment Date:</label>
+      <input type="text" id="input3" v-model="first_pay_date" />
+      <label for="last_pay_date">Number of Payment Months</label>
+      <input type="text" id="input4" v-model="num_payment_months" />
+      <RouterLink to="/property">
+        <button type="add" @click="saveCard">Add</button>
+      </RouterLink>
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
-
-import firebaseApp from '@/firebase.js';
-import{ collection, getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import firebaseApp from "@/firebase.js";
+import { collection, getFirestore } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, addDoc, getDoc } from "firebase/firestore";
-import {useToast} from 'vue-toast-notification';
+import { useToast } from "vue-toast-notification";
 // import VueToast from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+import "vue-toast-notification/dist/theme-bootstrap.css";
 import { useRoute } from "vue-router";
 
 const db = getFirestore(firebaseApp);
@@ -52,7 +54,7 @@ export default {
       tenant_email: "",
       rental: "",
       first_pay_date: "",
-      num_payment_months: ""
+      num_payment_months: "",
     };
   },
   mounted() {
@@ -64,7 +66,15 @@ export default {
 
     // Get Authentication
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
     // New part for router
     const route = useRoute();
     this.PropertyId = route.params.PropertyId;
@@ -72,7 +82,8 @@ export default {
   },
   methods: {
     validateEmail(email) {
-      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+      const emailRegex =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
       return emailRegex.test(email);
     },
     saveCard() {
@@ -86,17 +97,21 @@ export default {
         // });
         // Print contract ID
         // console.log(contract.id);
-        
-        // Console Testing to see if PropertyId and OwnerEmail passes through
-        console.log("From saveCard() -> PropertyID is : " + this.PropertyId)
-        console.log("From saveCard() -> OwnerEmail is : " + this.useremail)
 
-      } else if (this.tenant_email == "" || this.rental == "" || this.first_pay_date == "" || this.num_payment_months == "") {
-          this.$toast.error('Unfilled Fields!');
+        // Console Testing to see if PropertyId and OwnerEmail passes through
+        console.log("From saveCard() -> PropertyID is : " + this.PropertyId);
+        console.log("From saveCard() -> OwnerEmail is : " + this.useremail);
+      } else if (
+        this.tenant_email == "" ||
+        this.rental == "" ||
+        this.first_pay_date == "" ||
+        this.num_payment_months == ""
+      ) {
+        this.$toast.error("Unfilled Fields!");
       } else {
-        console.log("fail")
+        console.log("fail");
         // email is not valid, show error message
-        this.$toast.error('Invalid email address');
+        this.$toast.error("Invalid email address");
       }
     },
   },
