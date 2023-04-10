@@ -15,7 +15,7 @@
       <!-- This next tag will later be filled in using innerHTML -->
       <span id="inputPayStatus" class="info">{{ paymentStatus }}</span>
     </div>
-    
+
     <div id="PayAmt" class="card3">
       <span class="field">Next Payment Amount</span> <br />
       <!-- This next tag will later be filled in using innerHTML -->
@@ -43,8 +43,7 @@
     </div>
 
     <div id="Action" class="card3">
-      <button
-      v-bind:class="{
+      <button v-bind:class="{
         unpaid: isUnpaid,
         overdue: isOverdue,
         pending: isPending,
@@ -66,7 +65,7 @@
 <script>
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, getDocs, addDoc } from "firebase/firestore";
 import { query, where, collection } from "firebase/firestore";
 import { useRoute } from "vue-router";
@@ -76,38 +75,39 @@ const db = getFirestore(firebaseApp);
 export default {
   data() {
     return {
-        PaymentId: "",
-        PropertyId: "",
-        PropAddress: "",
-        paymentStatus: "",
-        nextPaymentAmount: "",
-        nextPaymentDueDate: "",
-        prevPaymentDueDate: "",
-        contractEndDate: "",
-        tenantName: "",
-        tenantEmail: "",
-        tenantPhone: "",
-        buttonTexts: {
-          Unpaid: 'Remind Tenant',
-          Overdue: 'Remind Tenant',
-          Pending: 'Approve Payment',
-          Paid: 'Back',
-        },
+      ContractId: "",
+      PaymentId: "",
+      PropertyId: "",
+      PropAddress: "",
+      paymentStatus: "",
+      nextPaymentAmount: "",
+      nextPaymentDueDate: "",
+      prevPaymentDueDate: "",
+      contractEndDate: "",
+      tenantName: "",
+      tenantEmail: "",
+      tenantPhone: "",
+      buttonTexts: {
+        Unpaid: "Remind Tenant",
+        Overdue: "Remind Tenant",
+        Pending: "Approve Payment",
+        Paid: "Back",
+      },
     };
   },
 
   computed: {
     isUnpaid() {
-      return this.paymentStatus === 'Unpaid';
+      return this.paymentStatus === "Unpaid";
     },
     isOverdue() {
-      return this.paymentStatus === 'Overdue';
+      return this.paymentStatus === "Overdue";
     },
     isPending() {
-      return this.paymentStatus === 'Pending';
+      return this.paymentStatus === "Pending";
     },
     isPaid() {
-      return this.paymentStatus === 'Paid';
+      return this.paymentStatus === "Paid";
     },
     computedButtonText() {
       return this.buttonTexts[this.paymentStatus];
@@ -116,11 +116,19 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
     // New part for router
     const route = useRoute();
-    const ContractId = route.params.ContractId;
-    await this.fetchAndUpdateData(this.useremail, ContractId);
+    this.ContractId = route.params.ContractId;
+    await this.fetchAndUpdateData(this.useremail, this.ContractId);
   },
 
   methods: {
@@ -157,41 +165,50 @@ export default {
       const paymentDoc = await getDoc(paymentDocRef);
       const paymentData = paymentDoc.data();
       this.paymentStatus = paymentData.Status;
-      this.nextPaymentDueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
-      this.prevPaymentDueDate = paymentData.PrevDueDate.toDate().toLocaleDateString();
+      this.nextPaymentDueDate =
+        paymentData.NextDueDate.toDate().toLocaleDateString();
+      this.prevPaymentDueDate =
+        paymentData.PrevDueDate.toDate().toLocaleDateString();
     },
 
     toggleState() {
       switch (this.paymentStatus) {
-        case 'Unpaid':
-          this.$router.push('/property');
+        case "Unpaid":
+          this.$router.push("/property");
           addDoc(collection(db, "Notification"), {
             ContractId: this.$route.params.ContractId,
             Date: new Date().toLocaleDateString(),
-            Message: "You have an upcoming payment on " + this.nextPaymentDueDate + "!",
+            Message:
+              "Owner: You have an upcoming payment on " +
+              this.nextPaymentDueDate +
+              "!",
             OwnerEmail: this.useremail,
-            TenantEmail: this.tenantEmail
+            TenantEmail: this.tenantEmail,
+            Receiver: "Tenant",
           });
           break;
-        case 'Overdue':
-          this.$router.push('/property');
+        case "Overdue":
+          this.$router.push("/property");
           addDoc(collection(db, "Notification"), {
             ContractId: this.$route.params.ContractId,
             Date: new Date().toLocaleDateString(),
-            Message: "You have an overdue payment dated " + this.prevPaymentDueDate + "!",
+            Message:
+              "Owner: You have an overdue payment dated " +
+              this.prevPaymentDueDate +
+              "!",
             OwnerEmail: this.useremail,
-            TenantEmail: this.tenantEmail
+            TenantEmail: this.tenantEmail,
+            Receiver: "Tenant",
           });
           break;
-        case 'Pending':
-          this.$router.push('/approvepayment/' + this.PaymentId);
+        case "Pending":
+          this.$router.push("/approvepayment/" + this.PaymentId);
           break;
-        case 'Paid':
-          this.$router.push('/property');
+        case "Paid":
+          this.$router.push("/property");
           break;
       }
     },
-
   },
 };
 </script>
@@ -233,7 +250,7 @@ export default {
   grid-area: f;
 }
 #Action {
-    grid-area: g;
+  grid-area: g;
 }
 
 .card3 {
@@ -277,5 +294,4 @@ span {
   background-color: red;
   color: white;
 }
-
 </style>

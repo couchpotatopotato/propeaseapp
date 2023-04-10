@@ -26,13 +26,8 @@
 
 <script>
 import firebaseApp from "@/firebase.js";
-import { getDoc, getFirestore } from "firebase/firestore";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import {
-  getAuth,
-  setPersistence,
-  browserLocalPersistence,
-} from "firebase/auth";
+import { getDoc, getFirestore, doc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const db = getFirestore(firebaseApp);
 
@@ -47,8 +42,26 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.email = auth.currentUser.email;
-    await this.fetchAndUpdateData(this.email);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+        let userType = "";
+        const docRef = doc(db, "Owner", this.useremail);
+        getDoc(docRef).then((doc) => {
+          if (doc.exists()) {
+            // the user is an Owner
+            userType = "Owner";
+          } else {
+            // the user is a Tenant
+            userType = "Tenant";
+          }
+          this.fetchAndUpdateData(this.useremail, userType);
+        });
+      } else {
+        // User is signed out
+      }
+    });
   },
 
   emits: ["showEdit"],
@@ -58,8 +71,8 @@ export default {
       this.$emit("showEdit", true);
     },
 
-    async fetchAndUpdateData(useremail) {
-      const info = await getDoc(doc(db, "Owner", String(useremail)));
+    async fetchAndUpdateData(useremail, userType) {
+      const info = await getDoc(doc(db, userType, useremail));
       const data = info.data();
       this.fullname = data["Name"];
       this.number = data["Phone"];

@@ -1,10 +1,13 @@
 <template>
-    <div class="card">
-      <figure>
-        <img src="@/components/Property/AddPropImg.jpeg" alt="Image description">
-        <figcaption>Property Address</figcaption>
-      </figure>
-      <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
+  <div class="card">
+    <figure>
+      <img
+        src="@/components/Property/AddPropImg.jpeg"
+        alt="Image description"
+      />
+      <figcaption>Property Address</figcaption>
+    </figure>
+    <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
       <h5> Property Address </h5> -->
       <div class="form-group">
         <label for="tenant_email">Tenant Email:</label>
@@ -19,18 +22,19 @@
           <button type="add" @click="saveCard">Add</button>
         </RouterLink>
       </div>
-    </div>
-  </template>
+  </div>
+</template>
 
 <script>
 
 import firebaseApp from '@/firebase.js';
 import{ collection, getFirestore, Timestamp } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged} from "firebase/auth";
 import { doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
 import {useToast} from 'vue-toast-notification';
+
 // import VueToast from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+import "vue-toast-notification/dist/theme-bootstrap.css";
 import { useRoute } from "vue-router";
 
 const db = getFirestore(firebaseApp);
@@ -51,7 +55,7 @@ export default {
       tenant_email: "",
       rental: "",
       first_pay_date: "",
-      num_payment_months: ""
+      num_payment_months: "",
     };
   },
   mounted() {
@@ -63,15 +67,27 @@ export default {
 
     // Get Authentication
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
-    // onAuthStateChanged(auth, (user) => {
-    //   if (user) {
-    //       // User is signed in, see docs for a list of available properties
-    //       this.useremail = user.email;
-    //   } else {
-    //       // User is signed out
-    //   }
-    // });
+// <<<<<<< HEAD
+//     this.useremail = auth.currentUser.email;
+//     // onAuthStateChanged(auth, (user) => {
+//     //   if (user) {
+//     //       // User is signed in, see docs for a list of available properties
+//     //       this.useremail = user.email;
+//     //   } else {
+//     //       // User is signed out
+//     //   }
+//     // });
+// =======
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
+// >>>>>>> 8d0cb8c9add8efd4f86722fd0f1d769e04479bc0
     // New part for router
     const route = useRoute();
     this.PropertyId = route.params.PropertyId;
@@ -143,9 +159,9 @@ export default {
         })
 
       } else {
-        console.log("fail")
+        console.log("fail");
         // email is not valid, show error message
-        this.$toast.error('Invalid email address');
+        this.$toast.error("Invalid email address");
       }
     },
   },

@@ -1,23 +1,23 @@
 <template>
-    <div>
-      <table>
-        <colgroup>
-          <col span="1" style="width: 35%" />
-          <col span="1" style="width: 35%" />
-          <col span="1" style="width: 30%" />
-        </colgroup>
-        <tr>
-            <th>Payment Date</th>
-            <th>Payment Mode</th>
-            <th>Payment Amount</th>
-        </tr>
-        <tr v-for="row in tableRows" :key="row.CurrContractId">
-            <td v-if="row.ContractId === ContractId">{{ row.PaymentDate }}</td>
-            <td v-if="row.ContractId === ContractId">{{ row.Mode }}</td>
-            <td v-if="row.ContractId === ContractId">{{ row.PaymentAmount }}</td>
-        </tr>
-      </table>
-    </div>
+  <div>
+    <table>
+      <colgroup>
+        <col span="1" style="width: 35%" />
+        <col span="1" style="width: 35%" />
+        <col span="1" style="width: 30%" />
+      </colgroup>
+      <tr>
+        <th>Payment Date</th>
+        <th>Payment Mode</th>
+        <th>Payment Amount</th>
+      </tr>
+      <tr v-for="row in tableRows" :key="row.CurrContractId">
+        <td v-if="row.ContractId === ContractId">{{ row.PaymentDate }}</td>
+        <td v-if="row.ContractId === ContractId">{{ row.Mode }}</td>
+        <td v-if="row.ContractId === ContractId">{{ row.PaymentAmount }}</td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -38,13 +38,21 @@ export default {
   data() {
     return {
       tableRows: [],
-      ContractId: ""
+      ContractId: "",
     };
   },
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        this.useremail = user.email;
+      } else {
+        // User is signed out
+      }
+    });
+
     // New part for router
     const route = useRoute();
     this.ContractId = route.params.ContractId;
@@ -65,13 +73,14 @@ export default {
           let ContractId = documentData.ContractId;
           let Mode = documentData.Mode;
           let PaymentAmount = documentData.PaymentAmount;
-          let PaymentDate = documentData.PaymentDate.toDate().toLocaleDateString();
+          let PaymentDate =
+            documentData.PaymentDate.toDate().toLocaleDateString();
 
           return {
             ContractId,
             Mode,
             PaymentAmount,
-            PaymentDate
+            PaymentDate,
           };
         })
       );
@@ -93,7 +102,8 @@ th {
   font-weight: bold;
 }
 
-td, th {
+td,
+th {
   text-align: left;
   padding: 2px 50px 2px 50px;
   line-height: 50px;

@@ -2,7 +2,7 @@
 import firebaseApp from "@/firebase.js";
 import { RouterLink, RouterView } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, getDoc, doc } from 'firebase/firestore';
+import { getFirestore, getDoc, doc } from "firebase/firestore";
 
 export default {
   name: "App",
@@ -62,7 +62,7 @@ export default {
       <!-- hide when not login -->
       <nav>
         <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/notif">Notification</RouterLink>
+        <RouterLink to="/notif">Notifications</RouterLink>
         <RouterLink to="/property">Property</RouterLink>
         <RouterLink to="/dashboard">Dashboard</RouterLink>
         <RouterLink to="/profile">Profile</RouterLink>
@@ -74,7 +74,7 @@ export default {
       <!-- hide when not login -->
       <nav>
         <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/notif">Notification</RouterLink>
+        <RouterLink to="/notif">Notifications</RouterLink>
         <RouterLink to="/rental">Rental</RouterLink>
         <RouterLink to="/browse">Browse</RouterLink>
         <RouterLink to="/profile">Profile</RouterLink>
@@ -92,7 +92,11 @@ export default {
       </RouterView>
     </div>
 
-    <RouterView v-slot="{ Component }" v-show="!user" style="margin: 0 0 -20px 0">
+    <RouterView
+      v-slot="{ Component }"
+      v-show="!user"
+      style="margin: 0 0 -20px 0"
+    >
       <transition name="scale" mode="out-in">
         <component :is="Component" />
       </transition>
