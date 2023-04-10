@@ -1,26 +1,26 @@
 <template>
     <div id="dashboard">
-        <div id="metric1" class="card">
+        <div id="metric1" class="cardSmall">
             <span class="field">Current Overdue</span> <br>
             <span class="info">{{ CurrentOverdue }}</span>
         </div>
 
-        <div id="metric2" class="card">
+        <div id="metric2" class="cardSmall">
             <span class="field">Active Contracts</span> <br>
             <span class="info">{{ NumActiveContracts }}</span>
         </div>
 
-        <div id="metric3" class="card">
+        <div id="metric3" class="cardSmall">
             <span class="field">Total Properties</span> <br>
             <span class="info">{{ TotalProp }}</span>
         </div>
 
-        <div id="metric4" class="card">
+        <div id="metric4" class="cardSmall">
             <span class="field">Available Properties</span> <br>
             <span class="info">{{ AvailProp }}</span>
         </div>
 
-        <div id="metric5" class="card">
+        <div id="metric5" class="cardSmall">
             <span class="field">Total Revenue</span> <br>
             <span class="info">{{ TotalRevenue }}</span>
         </div>

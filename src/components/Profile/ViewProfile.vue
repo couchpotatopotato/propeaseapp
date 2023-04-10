@@ -47,8 +47,8 @@ export default {
 
   async mounted() {
     const auth = getAuth();
-    this.useremail = auth.currentUser.email;
-    await this.fetchAndUpdateData(this.useremail);
+    this.email = auth.currentUser.email;
+    await this.fetchAndUpdateData(this.email);
   },
 
   emits: ["showEdit"],
