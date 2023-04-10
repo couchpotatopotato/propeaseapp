@@ -51,6 +51,14 @@
         paid: isPaid,
       }"
       v-on:click="toggleState"> {{ computedButtonText }} </button>
+<!-- =======
+        <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
+        <div v-else id="flexbutt">
+            <RouterLink :to="'/addtenant' + PropID">
+              <button class="button2">View</button>
+            </RouterLink>
+          </div>
+>>>>>>> Stashed changes -->
     </div>
   </div>
 </template>
