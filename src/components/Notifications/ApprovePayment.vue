@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <div id="Prop" class="card2">
+        <div id="Prop" class="card3">
             <img id="img1" src="@/components/Property/AddPropImg.jpeg" alt="Card Image">
             <span id="inputAddress">{{ Address }}</span>
         </div>
@@ -20,7 +20,7 @@
             <span id="inputPayMode" class="info">{{ PaymentMode }}</span>
         </div>
 
-        <div id="Tenant" class="card2">
+        <div id="Tenant" class="card3">
             <span class="field">Tenant</span> <br>
             <span id="tenantName" class="info">{{ TenantName }}</span> <br>
             <span id="tenantEmail" class="field">{{ TenantEmail }}</span> <br>
@@ -57,6 +57,8 @@ export default {
             TenantName: "",
             TenantEmail: "",
             TenantPhone: "",
+            ContractId: "",
+            useremail: ""
         };
     },
 
@@ -83,9 +85,9 @@ export default {
             let paymentData = paymentSnap.data();
 
             // get contract data
-            let contractId = paymentData.ContractId;
-            console.log("contractId:", contractId);
-            let contractRef = doc(db, "Contract", contractId);
+            this.ContractId = paymentData.ContractId;
+            console.log("contractId:", this.ContractId);
+            let contractRef = doc(db, "Contract", this.ContractId);
             let contractSnap = await getDoc(contractRef);
             if (contractSnap.exists()) {
                 console.log("Contract Document data:", contractSnap.data());
@@ -140,7 +142,9 @@ export default {
                 });
                 this.$emit("approved");
 
-                //add new payment doc where due date is + 1 month
+                // add payment to pay history
+
+                // reset pay document for next payment, or delete if contract is over
                 
             }
             catch(error) {
@@ -149,14 +153,13 @@ export default {
         },
 
         async reject() {
-            // to update payment status to "Paid"
             alert("Rejecting Payment Claim");
             try{
+                // to update payment status to "Paid"
                 const paymentDocRef = doc(db, "Payment", paymentID);
                 const paymentSnap = await getDoc(paymentDocRef);
                 const paymentData = paymentSnap.data();
-                const dueDate = paymentData.dueDate.toDate().toLocaleDateString();
-                console.log("Payment Date:", dueDate)
+                const dueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
 
                 Date.prototype.today = function () { 
                     return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth()+1) < 10)?"0":"") 
@@ -174,6 +177,17 @@ export default {
 
                 await updateDoc(paymentDocRef, {
                     "Status": newStatus
+                });
+
+                // to send notif to tenant that payment has been rejected
+                let date = new Date().toLocaleDateString()
+                addDoc(collection(db, "Notification"), {
+                    ContractId: this.ContractId,
+                    Date: date,
+                    Message: "Your payment claim of" + this.PaymentAmount + "on" + this.PaymentDate + "has been rejected.",
+                    OwnerEmail: this.useremail,
+                    TenantEmail: this.TenantEmail,
+                    Receiver: "Tenant"
                 });
 
                 this.$emit("rejected");
@@ -227,12 +241,21 @@ export default {
     grid-area: g;
 }
 
+.card3 {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    border-radius: 5px; /* 5px rounded corners */
+    background-color: var(--color-background);
+    padding: 15px 0px 15px 0px;
+}
+
 .card2 {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
     border-radius: 5px; /* 5px rounded corners */
     background-color: var(--color-background);
     padding: 15px 0px 15px 0px;
+    text-align: center;
 }
 
 #img1 {
