@@ -4,9 +4,13 @@
       <h2 v-show="notifCount < 2">{{ notifCount }} Notification</h2>
       <h2 v-show="notifCount >= 2">{{ notifCount }} Notifications</h2>
 
-      <RouterLink to="/notif">
+      <RouterLink v-show="userType == 'Owner'" to="/notif">
         <button class="button">View</button>
       </RouterLink>
+      <RouterLink v-show="userType == 'Tenant'" to="/tenantnotif">
+        <button class="button">View</button>
+      </RouterLink>
+
     </div>
     <br />
     <br />

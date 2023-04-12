@@ -74,7 +74,7 @@ export default {
       <!-- hide when not login -->
       <nav>
         <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/notif">Notifications</RouterLink>
+        <RouterLink to="/tenantnotif">Notifications</RouterLink>
         <RouterLink to="/rental">Rental</RouterLink>
         <RouterLink to="/browse">Browse</RouterLink>
         <RouterLink to="/profile">Profile</RouterLink>
