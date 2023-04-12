@@ -1,9 +1,9 @@
 <template>
   <table id="table">
     <colgroup>
-      <col span="1" style="width: 40%" />
+      <col span="1" style="width: 20%" />
       <col span="1" style="width: 15%" />
-      <col span="1" style="width: 40%" />
+      <col span="1" style="width: 60%" />
       <col span="1" style="width: 15%" />
     </colgroup>
     <tr>
@@ -14,10 +14,10 @@
     </tr>
 
     <tr v-for="row in tableRows" :key="row.propAddress">
-      <td v-if="row.ownerEmail === useremail">{{ row.propAddress }}</td>
-      <td v-if="row.ownerEmail === useremail">{{ row.tenantName }}</td>
-      <td v-if="row.ownerEmail === useremail">{{ row.message }}</td>
-      <td v-if="row.ownerEmail === useremail">
+      <td v-if="row.ownerEmail === useremail && (row.receiver === 'Owner' || row.receiver === 'Both')">{{ row.propAddress }}</td>
+      <td v-if="row.ownerEmail === useremail && (row.receiver === 'Owner' || row.receiver === 'Both')">{{ row.tenantName }}</td>
+      <td v-if="row.ownerEmail === useremail && (row.receiver === 'Owner' || row.receiver === 'Both')">{{ row.message }}</td>
+      <td v-if="row.ownerEmail === useremail && (row.receiver === 'Owner' || row.receiver === 'Both')">
         <div id="flexbutt">
           <RouterLink :to="'indivcontract/' + row.contractId">
             <button class="button button2">View</button>
@@ -74,6 +74,8 @@ export default {
           let ownerEmail = documentData.OwnerEmail;
           let tenantEmail = documentData.TenantEmail;
           let message = documentData.Message;
+          let notifDate = documentData.Date;
+          let receiver = documentData.Receiver;
 
           // Accessing Contract details
           const contractRef = doc(db, "Contract", contractId);
@@ -99,9 +101,17 @@ export default {
             propAddress,
             tenantName,
             message,
+            notifDate,
+            receiver
           };
         })
       );
+
+      console.log(this.tableRows);
+      // sort table rows according to date
+      this.tableRows.sort(function(a, b) {
+        return a.notifDate < b.notifDate ? 1 : -1;
+      });
     },
 
     async clear(notifId) {
