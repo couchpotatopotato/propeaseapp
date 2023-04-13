@@ -11,8 +11,11 @@
       </RouterLink>
     </div>
   </div>
+  <RouterLink to="/property">
+    <button type="back">Back</button>
+  </RouterLink>
 </template>
-0--
+  0--
 <style scoped>
 .card {
   border: 1px solid #ccc;
@@ -66,9 +69,9 @@ button {
 import firebaseApp from "@/firebase.js";
 import { collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
-import { useToast } from "vue-toast-notification";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import "vue-toast-notification/dist/theme-bootstrap.css";
+import {useToast} from 'vue-toast-notification';
+import { getAuth } from "firebase/auth";
+import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 const db = getFirestore(firebaseApp);
 
@@ -93,19 +96,12 @@ export default {
     console.log(this.$toast);
     // Vue.use(ToastPlugin);
     const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        this.useremail = user.email;
-      } else {
-        // User is signed out
-      }
-    });
+    this.useremail = auth.currentUser.email;
   },
   methods: {
     saveCard() {
       if (this.prop_name == "" || this.prop_address == "") {
-        this.$toast.error("Unfilled Fields!");
+        this.$toast.error('Unfilled Fields!');
       } else {
         const card = addDoc(collection(db, "Property"), {
           PropName: this.prop_name,

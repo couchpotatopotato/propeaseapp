@@ -5,7 +5,7 @@
         src="@/components/Property/AddPropImg.jpeg"
         alt="Image description"
       />
-      <figcaption>Property Address</figcaption>
+      <figcaption>{{ PropAddress }}</figcaption>
     </figure>
     <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
       <h5> Property Address </h5> -->
@@ -23,6 +23,9 @@
         </RouterLink>
       </div>
   </div>
+  <RouterLink to="/property">
+    <button type="back">Back</button>
+  </RouterLink>
 </template>
 
 <script>
@@ -56,9 +59,10 @@ export default {
       rental: "",
       first_pay_date: "",
       num_payment_months: "",
+      PropAddress: "",
     };
   },
-  mounted() {
+  async mounted() {
     this.$toast = useToast();
     // this.$toast.open('Component mounted!');
     // this.$toast.error('Error')
@@ -92,8 +96,17 @@ export default {
     const route = useRoute();
     this.PropertyId = route.params.PropertyId;
     console.log("PropertyID is : " + this.PropertyId);
+    await this.getPropAddress(this.PropertyId);
+    console.log("Property Address is : " + this.PropAddress);
   },
+
   methods: {
+    async getPropAddress(PropertyId) {
+      const propertyDocRef = doc(db, "Property", PropertyId);
+      const propertyDoc = await getDoc(propertyDocRef);
+      const propertyData = propertyDoc.data();
+      this.PropAddress = propertyData.PropAddress;
+    },
     validateEmail(email) {
       const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
       const tenantExists = true; // Need to modify based on whether email is present in database
@@ -186,8 +199,8 @@ export default {
 }
 
 .card figure figcaption {
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 10px;
+  font-size: 2.3rem;
 }
 
 img {
