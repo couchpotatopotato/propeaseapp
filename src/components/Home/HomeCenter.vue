@@ -10,7 +10,6 @@
       <RouterLink v-show="userType == 'Tenant'" to="/tenantnotif">
         <button class="button">View</button>
       </RouterLink>
-
     </div>
     <br />
     <br />
@@ -65,6 +64,7 @@ import {
   getDoc,
   doc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 
 const db = getFirestore(firebaseApp);
@@ -145,6 +145,48 @@ export default {
       console.log("count:" + count);
 
       return count;
+    },
+
+    async checkPayment() {
+      const colRef = collection(db, "Payment");
+      const allDocuments = await getDocs(colRef);
+
+      allDocuments.docs.map((documents) => {
+        const docRef = doc.ref;
+        let documentData = documents.data();
+        let currDate = Date.now();
+        let PrevDueDate = documentData.PrevDueDate;
+        let NextDueDate = documentData.NextDueDate;
+
+        // Update overdue status
+        if (currDate > nextDueDate) {
+          const newData = {
+            Status: "Overdue",
+          };
+          docRef.update(newData);
+
+          const ContractId = documentData.ContractId;
+          const docRef = doc(db, "Contract", ContractId);
+          docRef.get().then((doc) => {
+            OwnerEmail = doc.data().OwnerEmail;
+            TenantEmail = doc.data().TenantEmail;
+          });
+
+          // Create notif for overdue
+          addDoc(collection(db, "Notification"), {
+            ContractId: documentData.ContractId,
+            Date: new Date().toLocaleDateString(),
+            Message:
+              "System: There is an overdue payment of $" +
+              documentData.PaymentAmount +
+              "Payment due date: " +
+              documentData.NextDueDate,
+            OwnerEmail: OwnerEmail,
+            TenantEmail: TenantEmail,
+            Receiver: "Both",
+          });
+        }
+      });
     },
   },
 };
