@@ -109,6 +109,8 @@ export default {
       } else {
       }
     });
+
+    this.checkPayment();
   },
   methods: {
     async getNotifNumber(userType) {
@@ -152,22 +154,24 @@ export default {
       const allDocuments = await getDocs(colRef);
 
       allDocuments.docs.map((documents) => {
-        const docRef = doc.ref;
+        const docRef = documents.ref;
         let documentData = documents.data();
         let currDate = Date.now();
         let PrevDueDate = documentData.PrevDueDate;
         let NextDueDate = documentData.NextDueDate;
 
         // Update overdue status
-        if (currDate > nextDueDate) {
+        if (currDate > NextDueDate) {
+          console.log("UPDATING OVERDUEEEEEEEEEEEEE");
           const newData = {
             Status: "Overdue",
           };
-          docRef.update(newData);
+
+          updateDoc(docRef, newData);
 
           const ContractId = documentData.ContractId;
-          const docRef = doc(db, "Contract", ContractId);
-          docRef.get().then((doc) => {
+          const contractRef = doc(db, "Contract", ContractId);
+          contractRef.get().then((doc) => {
             OwnerEmail = doc.data().OwnerEmail;
             TenantEmail = doc.data().TenantEmail;
           });
