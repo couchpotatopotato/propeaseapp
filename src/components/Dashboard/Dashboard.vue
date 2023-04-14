@@ -65,10 +65,10 @@ export default {
             let totalProp = 0;
             propDetails.forEach((prop) => {
                 if (prop.data().OwnerEmail === this.useremail) {
-                    console.log(prop.id, " => ", prop.data());
                     totalProp += 1;
                 }
             });
+            console.log("total number of props obtained")
 
             // Collect data from Contract
             const contractRef = collection(db, "Contract");
@@ -76,10 +76,10 @@ export default {
             let activeContracts = 0;
             contractDetails.forEach((contract) => {
                 if (contract.data().OwnerEmail === this.useremail) {
-                    console.log(contract.id, " => ", contract.data());
                     activeContracts += 1;
                 }
             });
+            console.log("num active contracts obtained")
 
             // Collect data from Payment
             const paymentRef = collection(db, "Payment");
@@ -87,10 +87,10 @@ export default {
             let overdue = 0;
             paymentDetails.forEach((payment) => {
                 if (payment.data().OwnerEmail === this.useremail && payment.data().Status === "Overdue") {
-                    console.log(payment.id, " => ", payment.data());
                     overdue += 1;
                 }
             });
+            console.log("num overdue obtained")
 
             // Collect data from PaymentHistory
             const payHistRef = collection(db, "PaymentHistory");
@@ -98,10 +98,14 @@ export default {
             let totalRevenue = 0;
             payHistDetails.forEach((doc) => {
                 if (doc.data().OwnerEmail === this.useremail) {
-                    console.log(doc.id, " => ", doc.data());
-                    totalRevenue += doc.data().PaymentAmount;
+                    if (typeof(doc.data().PaymentAmount) === "string") {
+                        totalRevenue += parseInt(doc.data().PaymentAmount);
+                    } else {
+                        totalRevenue += doc.data().PaymentAmount;
+                    }
                 }
             });
+            console.log("total revenue obtained");
 
             this.CurrentOverdue = overdue;
             this.NumActiveContracts = activeContracts;
