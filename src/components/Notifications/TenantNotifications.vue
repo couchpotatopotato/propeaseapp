@@ -19,9 +19,9 @@
             <td v-if="row.tenantEmail === useremail && (row.receiver === 'Tenant' || row.receiver === 'Both')">{{ row.message }}</td>
             <td v-if="row.tenantEmail === useremail && (row.receiver === 'Tenant' || row.receiver === 'Both')">
             <div id="flexbutt">
-                <!-- <RouterLink :to="'indivcontract/' + row.contractId">
+                <RouterLink :to="'rental/'">
                 <button class="button button2">View</button>
-                </RouterLink> -->
+                </RouterLink> 
                 <button id="clear" class="button button2" @click="clear(row.notifId)">Clear</button>
             </div>
             </td>
@@ -108,10 +108,11 @@
                     })
                 );
         
-                console.log(this.tableRows);
                 // sort table rows according to date
                 this.tableRows.sort(function(a, b) {
-                    return a.notifDate < b.notifDate ? 1 : -1;
+                    let aDate = new Date(a.notifDate);
+                    let bDate = new Date(b.notifDate);
+                    return aDate < bDate ? 1 : -1;
                 });
             },
         

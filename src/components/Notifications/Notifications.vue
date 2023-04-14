@@ -107,10 +107,11 @@ export default {
         })
       );
 
-      console.log(this.tableRows);
       // sort table rows according to date
       this.tableRows.sort(function(a, b) {
-        return a.notifDate < b.notifDate ? 1 : -1;
+        let aDate = new Date(a.notifDate);
+        let bDate = new Date(b.notifDate);
+        return aDate < bDate ? 1 : -1;
       });
     },
 
