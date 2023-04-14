@@ -46,7 +46,14 @@
 <script>
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
-import { doc, getDoc, updateDoc, addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  addDoc,
+  collection,
+  Timestamp,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useRoute } from "vue-router";
 
@@ -64,7 +71,7 @@ export default {
       TenantPhone: "",
       ContractId: "",
       useremail: "",
-      PaymentId: ""
+      PaymentId: "",
     };
   },
 
@@ -148,22 +155,22 @@ export default {
         const currNextDue = paymentSnap.data().NextDueDate;
         const currNextDueMillis = currNextDue.toDate();
         const currNextDueDatetype = new Date(currNextDueMillis);
-        console.log(currNextDueDatetype)
+        console.log(currNextDueDatetype);
         const newNextDueMillis = new Date(currNextDueMillis);
         newNextDueMillis.setMonth(newNextDueMillis.getMonth() + 1);
         const newNextDueDatetype = new Date(newNextDueMillis);
-        console.log(newNextDueDatetype)
+        console.log(newNextDueDatetype);
         const newNextDue = Timestamp.fromMillis(newNextDueDatetype);
-        
+
         const currDate = new Date();
         console.log("Current Date: ", currDate);
         let newStatus = paymentSnap.data().Status;
         if (currDate <= currNextDueDatetype) {
-          console.log(currDate, '<=', currNextDueDatetype);
+          console.log(currDate, "<=", currNextDueDatetype);
           console.log("new status = paid");
           newStatus = "Paid";
         } else if (currDate <= newNextDueDatetype) {
-          console.log(currDate, '<=', newNextDueDatetype);
+          console.log(currDate, "<=", newNextDueDatetype);
           console.log("new status = unpaid");
           newStatus = "Unpaid";
         } else {
@@ -181,19 +188,19 @@ export default {
         this.$emit("approved");
 
         // add payment to pay history
-        console.log("updating pay history")
+        console.log("updating pay history");
         addDoc(collection(db, "PaymentHistory"), {
           ContractId: this.ContractId,
           Mode: this.PaymentMode,
           OwnerEmail: this.OwnerEmail,
           PaymentAmount: this.PaymentAmount,
           PaymentDate: Timestamp.fromDate(new Date(this.PaymentDate)),
-          TenantEmail: this.TenantEmail, 
+          TenantEmail: this.TenantEmail,
         });
-        console.log("payment history updated")
+        console.log("payment history updated");
 
         // add notif for approve
-        console.log("sending approve notif")
+        console.log("sending approve notif");
         addDoc(collection(db, "Notification"), {
           ContractId: this.ContractId,
           Date: new Date().toLocaleDateString(),
@@ -207,9 +214,8 @@ export default {
           TenantEmail: this.TenantEmail,
           Receiver: "Tenant",
         });
-        console.log("approve notif sent")
+        console.log("approve notif sent");
         this.$router.push("/indivcontract/" + this.ContractId);
-
       } catch (error) {
         console.error("Error executing approval", error);
       }
@@ -240,7 +246,7 @@ export default {
         });
 
         // to send notif to tenant that payment has been rejected
-        console.log("sending reject notif")
+        console.log("sending reject notif");
         addDoc(collection(db, "Notification"), {
           ContractId: this.ContractId,
           Date: new Date().toLocaleDateString(),
@@ -254,7 +260,7 @@ export default {
           TenantEmail: this.TenantEmail,
           Receiver: "Tenant",
         });
-        console.log("reject notif sent")
+        console.log("reject notif sent");
         this.$router.push("/indivcontract/" + this.ContractId);
 
         this.$emit("rejected");
@@ -344,6 +350,11 @@ span {
 
 .button2 {
   width: 100%;
+  background-color: green;
+}
+
+.button2:hover {
+  background-color: rgb(15, 62, 15);
 }
 
 #rejectbtn {
@@ -354,6 +365,6 @@ span {
   font-size: 1.2rem;
 }
 #rejectbtn:hover {
-  background-color: rgb(255, 230, 230);
+  background-color: rgb(95, 39, 39);
 }
 </style>

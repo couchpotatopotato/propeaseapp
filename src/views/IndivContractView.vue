@@ -4,6 +4,11 @@
     <IndivContract />
     <div class="about">Contract Payment History</div>
     <ContractPayHist />
+    <br />
+    <br />
+    <RouterLink to="/property">
+      <button type="back" class="button2">Back</button>
+    </RouterLink>
   </div>
 </template>
 

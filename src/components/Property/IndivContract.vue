@@ -42,15 +42,19 @@
       <span id="tenantPhone" class="field">{{ tenantPhone }}</span>
     </div>
 
-    <div id="Action" class="card3">
-      <button v-bind:class="{
+    <button
+      v-bind:class="{
         unpaid: isUnpaid,
         overdue: isOverdue,
         pending: isPending,
         paid: isPaid,
       }"
-      v-on:click="toggleState"> {{ computedButtonText }} </button>
-<!-- =======
+      v-on:click="toggleState"
+      v-show="paymentStatus != 'Paid'"
+    >
+      {{ computedButtonText }}
+    </button>
+    <!-- =======
         <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
         <div v-else id="flexbutt">
             <RouterLink :to="'/addtenant' + PropID">
@@ -58,7 +62,6 @@
             </RouterLink>
           </div>
 >>>>>>> Stashed changes -->
-    </div>
   </div>
 </template>
 
@@ -90,8 +93,7 @@ export default {
       buttonTexts: {
         Unpaid: "Remind Tenant",
         Overdue: "Remind Tenant",
-        Pending: "Approve Payment",
-        Paid: "Back",
+        Pending: "View Payment",
       },
     };
   },
@@ -283,14 +285,38 @@ span {
 }
 
 .unpaid {
-  background-color: blue;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-darkblue);
   color: white;
 }
 .pending {
-  background-color: green;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-darkblue);
   color: white;
 }
 .overdue {
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border: 2px solid var(--color-border);
   background-color: red;
   color: white;
 }

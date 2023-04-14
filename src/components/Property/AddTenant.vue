@@ -9,32 +9,31 @@
     </figure>
     <!-- <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
       <h5> Property Address </h5> -->
-      <div class="form-group">
-        <label for="tenant_email">Tenant Email:</label>
-        <input type="text" id="input1" v-model="tenant_email" />
-        <label for="rental">Monthly Rental Cost:</label>
-        <input type="text" id="input2" v-model="rental" />
-        <label for="first_pay_date">First Payment Date:</label>
-        <input type="date" id="input3" v-model="first_pay_date" />
-        <label for="last_pay_date">Number of Payment Months</label>
-        <input type="number" id="input4" v-model="num_payment_months" />
-        <RouterLink to="/property">
-          <button type="add" @click="saveCard">Add</button>
-        </RouterLink>
-      </div>
+    <div class="form-group">
+      <label for="tenant_email">Tenant Email:</label>
+      <input type="text" id="input1" v-model="tenant_email" />
+      <label for="rental">Monthly Rental Cost:</label>
+      <input type="text" id="input2" v-model="rental" />
+      <label for="first_pay_date">First Payment Date:</label>
+      <input type="date" id="input3" v-model="first_pay_date" />
+      <label for="last_pay_date">Number of Payment Months</label>
+      <input type="number" id="input4" v-model="num_payment_months" />
+      <RouterLink to="/property">
+        <button type="add" @click="saveCard" class="button2">Add</button>
+      </RouterLink>
+    </div>
   </div>
   <RouterLink to="/property">
-    <button type="back">Back</button>
+    <button type="back" class="button2">Back</button>
   </RouterLink>
 </template>
 
 <script>
-
-import firebaseApp from '@/firebase.js';
-import{ collection, getFirestore, Timestamp } from "firebase/firestore";
-import { getAuth, onAuthStateChanged} from "firebase/auth";
+import firebaseApp from "@/firebase.js";
+import { collection, getFirestore, Timestamp } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
-import {useToast} from 'vue-toast-notification';
+import { useToast } from "vue-toast-notification";
 
 // import VueToast from 'vue-toast-notification';
 import "vue-toast-notification/dist/theme-bootstrap.css";
@@ -71,17 +70,17 @@ export default {
 
     // Get Authentication
     const auth = getAuth();
-// <<<<<<< HEAD
-//     this.useremail = auth.currentUser.email;
-//     // onAuthStateChanged(auth, (user) => {
-//     //   if (user) {
-//     //       // User is signed in, see docs for a list of available properties
-//     //       this.useremail = user.email;
-//     //   } else {
-//     //       // User is signed out
-//     //   }
-//     // });
-// =======
+    // <<<<<<< HEAD
+    //     this.useremail = auth.currentUser.email;
+    //     // onAuthStateChanged(auth, (user) => {
+    //     //   if (user) {
+    //     //       // User is signed in, see docs for a list of available properties
+    //     //       this.useremail = user.email;
+    //     //   } else {
+    //     //       // User is signed out
+    //     //   }
+    //     // });
+    // =======
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -91,7 +90,7 @@ export default {
       }
     });
 
-// >>>>>>> 8d0cb8c9add8efd4f86722fd0f1d769e04479bc0
+    // >>>>>>> 8d0cb8c9add8efd4f86722fd0f1d769e04479bc0
     // New part for router
     const route = useRoute();
     this.PropertyId = route.params.PropertyId;
@@ -108,26 +107,37 @@ export default {
       this.PropAddress = propertyData.PropAddress;
     },
     validateEmail(email) {
-      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+      const emailRegex =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
       const tenantExists = true; // Need to modify based on whether email is present in database
-      return (emailRegex.test(email) && tenantExists);
+      return emailRegex.test(email) && tenantExists;
     },
     async saveCard() {
       // if any field empty -> reject
-      if (this.tenant_email == "" || this.rental == "" || this.first_pay_date == "" || this.num_payment_months == "") {
-        this.$toast.error('Unfilled Fields!');
-      } else if (this.validateEmail(this.tenant_email)) { // else check if email is valid and present in database
+      if (
+        this.tenant_email == "" ||
+        this.rental == "" ||
+        this.first_pay_date == "" ||
+        this.num_payment_months == ""
+      ) {
+        this.$toast.error("Unfilled Fields!");
+      } else if (this.validateEmail(this.tenant_email)) {
+        // else check if email is valid and present in database
 
-        console.log("This is the number of payment months: " + this.num_payment_months);
+        console.log(
+          "This is the number of payment months: " + this.num_payment_months
+        );
 
         // email is valid, Create new contract and create new payment
-        const startDateObject = new Date(this.first_pay_date)
+        const startDateObject = new Date(this.first_pay_date);
         // console.log("This is the startDateObject: " + startDateObject)
-        const endDateObject = new Date(this.first_pay_date)
+        const endDateObject = new Date(this.first_pay_date);
         // console.log("This is the endDateObject before modifying: " + endDateObject)
         // console.log("Month of endDateObject: "+ endDateObject.getMonth())
         // console.log("New Month of endDateObject: "+ endDateObject.getMonth() + this.num_payment_months)
-        endDateObject.setMonth(endDateObject.getMonth() + this.num_payment_months);
+        endDateObject.setMonth(
+          endDateObject.getMonth() + this.num_payment_months
+        );
         // console.log("This is the endDateObject after modifying: " + endDateObject)
         const startDateTimestamp = Timestamp.fromDate(startDateObject);
         const endDateTimestamp = Timestamp.fromMillis(endDateObject.getTime());
@@ -142,11 +152,13 @@ export default {
         });
 
         // Print contract ID
-        console.log("From saveCard() -> ContractID of new contract created is : " + contractRef.id);
+        console.log(
+          "From saveCard() -> ContractID of new contract created is : " +
+            contractRef.id
+        );
         // Console Testing to see if PropertyId and OwnerEmail passes through
-        console.log("From saveCard() -> PropertyID is : " + this.PropertyId)
-        console.log("From saveCard() -> OwnerEmail is : " + this.useremail)
-
+        console.log("From saveCard() -> PropertyID is : " + this.PropertyId);
+        console.log("From saveCard() -> OwnerEmail is : " + this.useremail);
 
         // create appropriate payment docyment
         const paymentRef = await addDoc(collection(db, "Payment"), {
@@ -155,22 +167,24 @@ export default {
           OwnerEmail: this.useremail,
           PaymentAmount: this.rental,
           Status: "Unpaid",
-          NextDueDate: Timestamp.fromDate(new Date(this.first_pay_date)), 
+          NextDueDate: Timestamp.fromDate(new Date(this.first_pay_date)),
         });
         // Print contract ID
-        console.log("From saveCard() -> PaymentID of new contract created is : " + paymentRef.id);
+        console.log(
+          "From saveCard() -> PaymentID of new contract created is : " +
+            paymentRef.id
+        );
 
         // Update the Contract with PaymentID
         await updateDoc(contractRef, {
-          PaymentId: paymentRef.id
-        })
+          PaymentId: paymentRef.id,
+        });
 
         // Set Property IsRented to true so now it doesn't display at AvailableListings, but instead at ActiveContracts
         const propertyRef = doc(db, "Property", this.PropertyId);
         await updateDoc(propertyRef, {
-          IsRented: true
-        })
-
+          IsRented: true,
+        });
       } else {
         console.log("fail");
         // email is not valid, show error message
@@ -219,7 +233,9 @@ label {
   margin-bottom: 0.5rem;
 }
 
-input[type="text"], input[type="date"], input[type="number"] {
+input[type="text"],
+input[type="date"],
+input[type="number"] {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid #ccc;
