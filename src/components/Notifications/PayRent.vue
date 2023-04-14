@@ -35,7 +35,7 @@
 <script>
 import firebaseApp from '@/firebase.js';
 import{ getFirestore, Timestamp } from "firebase/firestore";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRoute } from "vue-router";
 
@@ -52,6 +52,7 @@ export default {
             useremail: "",
             pay_mode: "",
             OwnerEmail: "",
+            TenantName: "",
         };
     },
 
@@ -66,12 +67,12 @@ export default {
             }
         });
         const route = useRoute();
-        this.PaymentId = "ApPcATa3tCDMiwGdhKL3"; // change to route.params.PaymentId after linking;
         await this.fetchAndUpdateData(this.useremail);
     },
 
     methods: {
         async fetchAndUpdateData(useremail) {
+            this.PaymentId = "ApPcATa3tCDMiwGdhKL3";
             // get payment data
             let paymentRef = doc(db, "Payment", this.PaymentId);
             let paymentSnap = await getDoc(paymentRef);
@@ -96,11 +97,15 @@ export default {
             let propertyRef = doc(db, "Property", propertyId);
             let propertySnap = await getDoc(propertyRef);
             let propertyData = propertySnap.data();
+
+            // get tenant name
+            let tenantRef = doc(db, "Tenant", this.useremail);
+            let tenantSnap = await getDoc(tenantRef);
+            this.TenantName = tenantSnap.data().Name;
             
-            //
             this.Address = propertyData.PropAddress;
             this.PaymentAmount = "$" + contractData.RentalCost;
-            this.PaymentDate = paymentData.PaymentDate.toDate().toLocaleDateString();
+            this.PaymentDate = new Date().toLocaleDateString();
         },
 
         async pay() {
@@ -108,6 +113,8 @@ export default {
             alert("Submitting Payment Claim");
             try{
                 const paymentDocRef = doc(db, "Payment", this.PaymentId);
+
+                console.log(this.pay_mode);
                 await updateDoc(paymentDocRef, {
                     "PaymentDate": Timestamp.now(),
                     "Status": "Pending",
@@ -121,14 +128,24 @@ export default {
                 addDoc(collection(db, "Notification"), {
                     ContractId: this.ContractId,
                     Date: date,
-                    Message: "Tenant" + tenantName + "has paid payment of" + this.PaymentAmount + "on" + date,
+                    Message: 
+                        "Tenant: " + 
+                        this.TenantName + 
+                        " has paid payment of $" + 
+                        this.PaymentAmount + 
+                        " on " + 
+                        date +
+                        ".",
                     OwnerEmail: this.OwnerEmail,
                     TenantEmail: this.useremail,
                     Receiver: "Owner"
                 });
+
+                alert("Payment Claim successfully logged")
+                this.$router.push("/rental");
             }
             catch(error) {
-                console.error("Error executing rejection", error)
+                console.error("Error executing payment", error)
             }
         }
     }
@@ -138,7 +155,7 @@ export default {
 
 <style scoped>
 .card {
-    width: 70%;
+    /* width: 70%; */
     align-self: center;
     display: grid;
     grid-gap: 20px;
@@ -152,7 +169,7 @@ export default {
 
 #Prop {
     grid-area: a;
-    width: 300px;
+    width: 350px;
 }
 
 #PayAmt {
