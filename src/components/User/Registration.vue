@@ -18,8 +18,6 @@ export default {
     showLogin() {
       this.$emit("showLogin", true);
     },
-    // check contact number format, valid email format or pin to see if exist?, password requirement
-    //
     userRegistration() {
       const auth = getAuth();
       createUserWithEmailAndPassword(auth, this.email, this.password)
@@ -35,7 +33,9 @@ export default {
         })
         .catch((error) => {
           const errorCode = error.code;
-          if (errorCode === "auth/email-already-in-use") {
+          if (errorCode === "auth/invalid-email") {
+            alert("Invalid email address.")
+          } else if (errorCode === "auth/email-already-in-use") {
             alert("Email already in use.");
           } else if (errorCode === "auth/weak-password") {
             alert(
@@ -45,6 +45,16 @@ export default {
             alert(error.message);
           }
         });
+    },
+    // check contact number format
+    checkContact() {
+      document.getElementById("errorMsg_contact").innerText = "";
+      try {
+        let emailRe = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+        return (emailRe.test(this.email));
+      } catch {
+        //
+      }
     },
   },
   created() {
@@ -78,18 +88,20 @@ export default {
       />
     </div>
     <div class="form-group">
-      <label for="contactNo">Contact Number</label>
+      <label for="contactNo">
+        Contact Number
+        <span style="color: red;">*(Singapore No. ONLY)</span>
+      </label>
       <input
         class="form-control"
-        type="text"
+        type="tel"
         id="contactNo"
         name="contactNo"
         placeholder="Enter your Contact Number"
         required
-        v-model="contactNo"
-        pattern="(6|8|9)[0-9]{7}"
+        v-model="contactNo" 
+        pattern="[6|8|9]{1}[0-9]{7}"
       />
-      <span class="error-messge"></span>
     </div>
     <div class="form-group">
       <label for="email">Email</label>
@@ -100,9 +112,8 @@ export default {
         name="email"
         placeholder="Enter your Email"
         required
-        v-model="email"
+        v-model="email" 
       />
-      <span class="error-messge"></span>
     </div>
     <div class="form-group">
       <label for="pw">Password</label>
@@ -114,8 +125,7 @@ export default {
         placeholder="Enter your Password"
         required
         v-model="password"
-      />
-      <span class="error-messge"></span>
+      /> <!--pattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"-->
     </div>
     <div class="form-group">
       <label for="userType">User Type</label>
@@ -145,7 +155,6 @@ export default {
 
 <style scoped>
 @import "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css";
-
 .error-messge {
   display: block;
   color: red;

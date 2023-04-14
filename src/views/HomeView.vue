@@ -9,7 +9,7 @@
 .about {
   /*margin-left: 15%;
   margin-top: 15%;*/
-  margin-left: 10%;
+  margin-left: 15%;
   margin-top: 10%;
   font-weight: 700;
   font-size: 100px;

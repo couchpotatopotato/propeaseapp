@@ -67,21 +67,21 @@ export default {
 
 
 <template>
-    <div class="container px-4 overflow-hidden" id="allProps">
+    <div class="container-fluid px-4 overflow-hidden" id="allProps">
         <div class="row gy-5"> <!---->
-            <div class="col-sm-12 col-md-4 col-xxl-3" v-for="prop in properties" :key="prop.PropertyId" > <!--v-show="prop.IsRented"-->
+            <div class="col-md-12 col-lg-4 col-xxl-3" v-for="prop in properties" :key="prop.PropertyId" > <!--v-show="prop.IsRented"-->
                 <div class="card p-3" style="margin-top: 10px;">
                     <img class="card-img-top" src="../../assets/landingPgimg2.jpg" alt="property img">
                     <div class="card-body">
                         <h4 class="card-title" style="font-weight: bold;">{{ prop.PropName }}</h4>
-                        <p class="card-text">{{ prop.PropAddress }}</p>
+                        <p class="card-text">Address: {{ prop.PropAddress }}</p>
 
                         <br>
 
                         <p class="card-text">
                             <span style="font-weight: bold;">{{ prop.ownerName }}</span> <br>
-                            <span>{{ prop.OwnerEmail }}</span> <br>
-                            <span>{{ prop.ownerPhone }}</span>
+                            <span>Email: {{ prop.OwnerEmail }}</span> <br>
+                            <span>Phone: {{ prop.ownerPhone }}</span>
                         </p>
                     </div>
                 </div>
