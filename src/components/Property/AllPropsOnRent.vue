@@ -14,7 +14,8 @@ export default {
 
             // Collect data from relevant Collections
             const propColRef = collection(db, "Property");
-            const allProperty = await getDocs(propColRef);
+            const q = query(propColRef, where("IsRented", "==", false));
+            const allProperty = await getDocs(q);
 
             // Promise.all to ensure all async operations are over.
             // to iterate over all documents and create arrays of promises
