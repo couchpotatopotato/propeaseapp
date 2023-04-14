@@ -46,7 +46,7 @@
 <script>
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, addDoc, collection, Timestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useRoute } from "vue-router";
 
@@ -64,6 +64,7 @@ export default {
       TenantPhone: "",
       ContractId: "",
       useremail: "",
+      PaymentId: ""
     };
   },
 
@@ -72,8 +73,8 @@ export default {
     this.useremail = auth.currentUser; // owner email
     // New part for router
     const route = useRoute();
-    const PaymentId = route.params.PaymentId;
-    await this.fetchAndUpdateData(PaymentId);
+    this.PaymentId = route.params.PaymentId;
+    await this.fetchAndUpdateData(this.PaymentId);
   },
 
   methods: {
@@ -135,21 +136,80 @@ export default {
       this.TenantName = tenantData.Name;
       this.TenantEmail = tenantEmail;
       this.TenantPhone = tenantData.Phone;
+      this.OwnerEmail = contractData.OwnerEmail;
     },
 
     async approve() {
       // to update payment status to "Paid"
       alert("Approving Payment Claim");
       try {
-        const paymentDocRef = doc(db, "Payment", paymentID);
+        const paymentDocRef = doc(db, "Payment", this.PaymentId);
+        const paymentSnap = await getDoc(paymentDocRef);
+        const currNextDue = paymentSnap.data().NextDueDate;
+        const currNextDueMillis = currNextDue.toDate();
+        const currNextDueDatetype = new Date(currNextDueMillis);
+        console.log(currNextDueDatetype)
+        const newNextDueMillis = new Date(currNextDueMillis);
+        newNextDueMillis.setMonth(newNextDueMillis.getMonth() + 1);
+        const newNextDueDatetype = new Date(newNextDueMillis);
+        console.log(newNextDueDatetype)
+        const newNextDue = Timestamp.fromMillis(newNextDueDatetype);
+        
+        const currDate = new Date();
+        console.log("Current Date: ", currDate);
+        let newStatus = paymentSnap.data().Status;
+        if (currDate <= currNextDueDatetype) {
+          console.log(currDate, '<=', currNextDueDatetype);
+          console.log("new status = paid");
+          newStatus = "Paid";
+        } else if (currDate <= newNextDueDatetype) {
+          console.log(currDate, '<=', newNextDueDatetype);
+          console.log("new status = unpaid");
+          newStatus = "Unpaid";
+        } else {
+          newStatus = "Overdue";
+        }
+        console.log(paymentSnap.data());
+
+        // update pay doc
         await updateDoc(paymentDocRef, {
-          Status: "Paid",
+          Status: newStatus,
+          PaymentDate: Timestamp.fromDate(new Date(this.PaymentDate)),
+          PrevDueDate: currNextDue,
+          NextDueDate: newNextDue,
         });
         this.$emit("approved");
 
         // add payment to pay history
+        console.log("updating pay history")
+        addDoc(collection(db, "PaymentHistory"), {
+          ContractId: this.ContractId,
+          Mode: this.PaymentMode,
+          OwnerEmail: this.OwnerEmail,
+          PaymentAmount: this.PaymentAmount,
+          PaymentDate: Timestamp.fromDate(new Date(this.PaymentDate)),
+          TenantEmail: this.TenantEmail, 
+        });
+        console.log("payment history updated")
 
-        // reset pay document for next payment, or delete if contract is over
+        // add notif for approve
+        console.log("sending approve notif")
+        addDoc(collection(db, "Notification"), {
+          ContractId: this.ContractId,
+          Date: Timestamp.fromDate(new Date()),
+          Message:
+            "Owner: Your payment claim of " +
+            this.PaymentAmount +
+            " on " +
+            this.PaymentDate +
+            " has been approved.",
+          OwnerEmail: this.OwnerEmail,
+          TenantEmail: this.TenantEmail,
+          Receiver: "Tenant",
+        });
+        console.log("approve notif sent")
+        this.$router.push("/indivcontract/" + this.ContractId);
+
       } catch (error) {
         console.error("Error executing approval", error);
       }
@@ -159,26 +219,16 @@ export default {
       alert("Rejecting Payment Claim");
       try {
         // to update payment status to "Paid"
-        const paymentDocRef = doc(db, "Payment", paymentID);
+        const paymentDocRef = doc(db, "Payment", this.PaymentId);
         const paymentSnap = await getDoc(paymentDocRef);
         const paymentData = paymentSnap.data();
-        const dueDate = paymentData.NextDueDate.toDate().toLocaleDateString();
+        const dueDateMillis = paymentData.NextDueDate.toDate();
+        const dueDatetype = new Date(dueDateMillis);
 
-        Date.prototype.today = function () {
-          return (
-            (this.getDate() < 10 ? "0" : "") +
-            this.getDate() +
-            "/" +
-            (this.getMonth() + 1 < 10 ? "0" : "") +
-            (this.getMonth() + 1) +
-            "/" +
-            this.getFullYear()
-          );
-        };
-        const currDate = new Date().today();
+        const currDate = new Date();
         console.log("Current Date: ", currDate);
         let newStatus = paymentData.Status;
-        if (currDate <= dueDate) {
+        if (currDate <= dueDatetype) {
           newStatus = "Unpaid";
         } else {
           newStatus = "Overdue";
@@ -190,20 +240,22 @@ export default {
         });
 
         // to send notif to tenant that payment has been rejected
-        let date = new Date().toLocaleDateString();
+        console.log("sending reject notif")
         addDoc(collection(db, "Notification"), {
           ContractId: this.ContractId,
-          Date: date,
+          Date: Timestamp.fromDate(new Date()),
           Message:
-            "Your payment claim of" +
+            "Owner: Your payment claim of " +
             this.PaymentAmount +
-            "on" +
+            " on " +
             this.PaymentDate +
-            "has been rejected.",
-          OwnerEmail: this.useremail,
+            " has been rejected.",
+          OwnerEmail: this.OwnerEmail,
           TenantEmail: this.TenantEmail,
           Receiver: "Tenant",
         });
+        console.log("reject notif sent")
+        this.$router.push("/indivcontract/" + this.ContractId);
 
         this.$emit("rejected");
       } catch (error) {
