@@ -65,6 +65,7 @@ import {
   doc,
   getDocs,
   updateDoc,
+  addDoc,
 } from "firebase/firestore";
 
 const db = getFirestore(firebaseApp);
@@ -118,7 +119,6 @@ export default {
       const colRef = collection(db, "Notification");
       const allDocuments = await getDocs(colRef);
 
-      console.log("try: " + userType);
       allDocuments.docs.map((documents) => {
         let documentData = documents.data();
         let tenantEmail = documentData.TenantEmail;
@@ -126,14 +126,11 @@ export default {
         let receiver = documentData.Receiver;
 
         if (userType == "Owner") {
-          console.log("inside1");
-
           if (
             ownerEmail == this.useremail &&
             (receiver == "Owner" || receiver == "Both")
           ) {
             count += 1;
-            console.log("inside2");
           }
         } else if (userType == "Tenant") {
           if (
@@ -144,7 +141,6 @@ export default {
           }
         }
       });
-      console.log("count:" + count);
 
       return count;
     },
@@ -159,10 +155,21 @@ export default {
         let currDate = Date.now();
         let PrevDueDate = documentData.PrevDueDate;
         let NextDueDate = documentData.NextDueDate;
+        let status = documentData.Status;
+
+        // Update unpaid status
+        if (PrevDueDate) {
+          if (currDate > PrevDueDate.toDate().getTime() && status == "Paid") {
+            const newData = {
+              Status: "Unpaid",
+            };
+
+            updateDoc(docRef, newData);
+          }
+        }
 
         // Update overdue status
-        if (currDate > NextDueDate) {
-          console.log("UPDATING OVERDUEEEEEEEEEEEEE");
+        if (currDate > NextDueDate.toDate().getTime() && status != "Overdue") {
           const newData = {
             Status: "Overdue",
           };
@@ -171,23 +178,26 @@ export default {
 
           const ContractId = documentData.ContractId;
           const contractRef = doc(db, "Contract", ContractId);
-          contractRef.get().then((doc) => {
-            OwnerEmail = doc.data().OwnerEmail;
-            TenantEmail = doc.data().TenantEmail;
-          });
+          getDoc(contractRef).then((doc) => {
+            if (doc.exists()) {
+              let OwnerEmail = doc.data().OwnerEmail;
+              let TenantEmail = doc.data().TenantEmail;
 
-          // Create notif for overdue
-          addDoc(collection(db, "Notification"), {
-            ContractId: documentData.ContractId,
-            Date: new Date().toLocaleDateString(),
-            Message:
-              "System: There is an overdue payment of $" +
-              documentData.PaymentAmount +
-              "Payment due date: " +
-              documentData.NextDueDate,
-            OwnerEmail: OwnerEmail,
-            TenantEmail: TenantEmail,
-            Receiver: "Both",
+              // Create notif for overdue
+
+              addDoc(collection(db, "Notification"), {
+                ContractId: documentData.ContractId,
+                Date: new Date().toLocaleDateString(),
+                Message:
+                  "System: There is an overdue payment of $" +
+                  documentData.PaymentAmount +
+                  ". Payment due date: " +
+                  documentData.NextDueDate.toDate().toLocaleDateString(),
+                OwnerEmail: OwnerEmail,
+                TenantEmail: TenantEmail,
+                Receiver: "Both",
+              });
+            }
           });
         }
       });
