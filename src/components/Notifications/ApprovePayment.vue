@@ -196,7 +196,7 @@ export default {
         console.log("sending approve notif")
         addDoc(collection(db, "Notification"), {
           ContractId: this.ContractId,
-          Date: Timestamp.fromDate(new Date()),
+          Date: new Date().toLocaleDateString(),
           Message:
             "Owner: Your payment claim of " +
             this.PaymentAmount +
@@ -243,7 +243,7 @@ export default {
         console.log("sending reject notif")
         addDoc(collection(db, "Notification"), {
           ContractId: this.ContractId,
-          Date: Timestamp.fromDate(new Date()),
+          Date: new Date().toLocaleDateString(),
           Message:
             "Owner: Your payment claim of " +
             this.PaymentAmount +
