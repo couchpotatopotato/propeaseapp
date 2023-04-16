@@ -78,15 +78,17 @@ export default {
         // User is signed out
       }
     });
+    // Router from TenantContract
     const route = useRoute();
-    await this.fetchAndUpdateData(this.useremail);
+    this.PaymentId = route.params.PaymentId;
+    await this.fetchAndUpdateData(this.useremail, this.PaymentId);
   },
 
   methods: {
-    async fetchAndUpdateData(useremail) {
-      this.PaymentId = "ApPcATa3tCDMiwGdhKL3";
+    async fetchAndUpdateData(useremail, PaymentId) {
+      // this.PaymentId = "ApPcATa3tCDMiwGdhKL3";
       // get payment data
-      let paymentRef = doc(db, "Payment", this.PaymentId);
+      let paymentRef = doc(db, "Payment", PaymentId);
       let paymentSnap = await getDoc(paymentRef);
       if (paymentSnap.exists()) {
         console.log("Payment Document data:", paymentSnap.data());

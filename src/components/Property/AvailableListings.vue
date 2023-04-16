@@ -142,7 +142,7 @@ th {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
+  width: 120px;
   height: 30px;
   border-radius: 5px;
   font-size: 0.8rem;

@@ -41,20 +41,19 @@
         <span id="tenantEmail" class="field">{{ tenantEmail }}</span> <br />
         <span id="tenantPhone" class="field">{{ tenantPhone }}</span>
       </div>
-  
-      <div id="Action" class="card3">
-        <RouterLink to="/rental">
-            <button>Back</button>
-        </RouterLink>
-  <!-- =======
-          <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
-          <div v-else id="flexbutt">
-              <RouterLink :to="'/addtenant' + PropID">
-                <button class="button2">View</button>
-              </RouterLink>
-            </div>
-  >>>>>>> Stashed changes -->
-      </div>
+      
+      <button id="Action" 
+        v-bind:class="{
+          unpaid: isUnpaid,
+          overdue: isOverdue,
+          pending: isPending,
+          paid: isPaid,
+        }"
+        v-on:click="toggleState"
+        
+      >
+        {{ computedButtonText }}
+      </button>   
     </div>
   </template>
   
@@ -82,7 +81,31 @@
         tenantName: "",
         tenantEmail: "",
         tenantPhone: "",
+        buttonTexts: {
+          Unpaid: "Click to Pay Rent",
+          Overdue: "Click to Pay Overdue Rent",
+          Pending: "Payment is Pending Approval",
+          Paid: "Payment Made Successfully"
+        },
       };
+    },
+
+    computed: {
+      isUnpaid() {
+        return this.paymentStatus === "Unpaid";
+      },
+      isOverdue() {
+        return this.paymentStatus === "Overdue";
+      },
+      isPending() {
+        return this.paymentStatus === "Pending";
+      },
+      isPaid() {
+        return this.paymentStatus === "Paid";
+      },
+      computedButtonText() {
+        return this.buttonTexts[this.paymentStatus];
+      },
     },
   
     async mounted() {
@@ -155,6 +178,19 @@
           paymentData.NextDueDate.toDate().toLocaleDateString();
         this.prevPaymentDueDate =
           paymentData.PrevDueDate.toDate().toLocaleDateString();
+      },
+      
+      toggleState() {
+        // Allows tenant to navigate to PayRent.vue only if payment is Unpaid or Overdue
+        switch (this.paymentStatus) {
+          case "Unpaid":
+            this.$router.push("/payrent/" + this.PaymentId);
+            break;
+          case "Overdue":
+            this.$router.push("/payrent/" + this.PaymentId);
+            break;
+            // Do nothing if Payment Status is Paid or Pending
+        }
       },
     },
   };
@@ -230,14 +266,51 @@
   }
   
   .unpaid {
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border: 2px solid var(--color-border);
     background-color: blue;
     color: white;
   }
-  .pending {
+ .paid {
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border: 2px solid var(--color-border);
     background-color: green;
     color: white;
   }
+
+  .pending {
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border: 2px solid var(--color-border);
+    background-color: orange;
+    color: white;
+  }
   .overdue {
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border: 2px solid var(--color-border);
     background-color: red;
     color: white;
   }

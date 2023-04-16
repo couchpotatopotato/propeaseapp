@@ -1,9 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="about">Property</div>
-    <PropListing /><br /><br />
     <ActiveContracts /><br /><br />
-    <AvailableListings />
+    <AvailableListings /><br /><br />
+    <PropListing />
   </div>
 </template>
 

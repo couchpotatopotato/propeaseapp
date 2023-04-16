@@ -7,12 +7,12 @@
       <label for="prop_address">Address:</label>
       <input type="text" id="input2" v-model="prop_address" />
       <RouterLink to="/property">
-        <button type="add" @click="saveCard">Add</button>
+        <button type="add" class="button2" @click="saveCard">Add</button>
       </RouterLink>
     </div>
   </div>
   <RouterLink to="/property">
-    <button type="back">Back</button>
+    <button type="back" class="button2">Back</button>
   </RouterLink>
 </template>
   0--
