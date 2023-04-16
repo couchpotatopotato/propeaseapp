@@ -169,7 +169,11 @@ export default {
         }
 
         // Update overdue status
-        if (currDate > NextDueDate.toDate().getTime() && status != "Overdue") {
+        if (
+          currDate > NextDueDate.toDate().getTime() &&
+          status != "Overdue" &&
+          status != "Pending"
+        ) {
           const newData = {
             Status: "Overdue",
           };

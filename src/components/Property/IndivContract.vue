@@ -43,7 +43,8 @@
     </div>
 
     <button
-      id=Action v-bind:class="{
+      id="Action"
+      v-bind:class="{
         unpaid: isUnpaid,
         overdue: isOverdue,
         pending: isPending,
@@ -56,13 +57,11 @@
     </button>
 
     <button
-      id=Terminate
+      id="Terminate"
       @click="terminateContract(this.ContractId, this.PaymentId)"
-      >
-        Terminate Contract
+    >
+      Terminate Contract
     </button>
-
-
   </div>
 </template>
 
@@ -70,7 +69,14 @@
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, getDocs, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { query, where, collection } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
@@ -197,7 +203,7 @@ export default {
             Date: new Date().toLocaleDateString(),
             Message:
               "Owner: You have an overdue payment dated " +
-              this.prevPaymentDueDate +
+              this.nextPaymentDueDate +
               "!",
             OwnerEmail: this.useremail,
             TenantEmail: this.tenantEmail,
@@ -231,10 +237,9 @@ export default {
       await updateDoc(propertyRef, {
         IsRented: false,
       });
-      console.log("Updated IsRented for PropertyID: " + this.PropertyID)
-      // Router back to Property Page 
+      console.log("Updated IsRented for PropertyID: " + this.PropertyID);
+      // Router back to Property Page
       this.$router.push("/property");
-
     },
   },
 };
