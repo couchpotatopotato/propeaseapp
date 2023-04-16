@@ -70,17 +70,6 @@ export default {
 
     // Get Authentication
     const auth = getAuth();
-    // <<<<<<< HEAD
-    //     this.useremail = auth.currentUser.email;
-    //     // onAuthStateChanged(auth, (user) => {
-    //     //   if (user) {
-    //     //       // User is signed in, see docs for a list of available properties
-    //     //       this.useremail = user.email;
-    //     //   } else {
-    //     //       // User is signed out
-    //     //   }
-    //     // });
-    // =======
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -90,7 +79,6 @@ export default {
       }
     });
 
-    // >>>>>>> 8d0cb8c9add8efd4f86722fd0f1d769e04479bc0
     // New part for router
     const route = useRoute();
     this.PropertyId = route.params.PropertyId;

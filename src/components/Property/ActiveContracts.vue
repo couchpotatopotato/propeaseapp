@@ -75,11 +75,11 @@ export default {
       }
     });
 
-    await this.fetchAndUpdateData(this.useremail);
+    await this.fetchAndUpdateData();
   },
 
   methods: {
-    async fetchAndUpdateData(useremail) {
+    async fetchAndUpdateData() {
       // Collect data from relevant Collections
       const colRef = collection(db, "Contract");
       const allContracts = await getDocs(colRef);

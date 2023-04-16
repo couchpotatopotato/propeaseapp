@@ -108,7 +108,8 @@ export default {
       console.log(
         "Deleted Document successfully, PropertyId is : " + PropertyId
       );
-      // ONLY PROBLEM NOW IS THAT IT DOESN'T REFRESH
+      // Reload the page after the document is deleted
+      window.location.reload();
     },
   },
 };

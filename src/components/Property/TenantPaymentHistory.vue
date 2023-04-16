@@ -48,7 +48,7 @@
         if (user) {
           // User is signed in, see docs for a list of available properties
           this.useremail = user.email;
-          console.log("Using OnAuthStateCHange: " + this.useremail)
+          console.log("Using OnAuthStateCHange in TenantPaymentHistory: " + this.useremail)
         } else {
           // User is signed out
         }

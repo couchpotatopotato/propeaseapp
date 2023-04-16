@@ -110,11 +110,12 @@
   
     async mounted() {
       const auth = getAuth();
-      this.useremail = auth.currentUser.email
+      this.useremail = auth.currentUser.email // If i don't include this line, nothing will show
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // User is signed in, see docs for a list of available properties
           this.useremail = user.email;
+          console.log("Using OnAuthStateCHange in TenantContract: " + this.useremail)
         } else {
           // User is signed out
         }

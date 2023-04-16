@@ -43,7 +43,7 @@
     </div>
 
     <button
-      v-bind:class="{
+      id=Action v-bind:class="{
         unpaid: isUnpaid,
         overdue: isOverdue,
         pending: isPending,
@@ -54,14 +54,15 @@
     >
       {{ computedButtonText }}
     </button>
-    <!-- =======
-        <button v-if="paymentStatus === 'Unpaid' || paymentStatus === 'Overdue'" class="button2">Send Reminder</button>
-        <div v-else id="flexbutt">
-            <RouterLink :to="'/addtenant' + PropID">
-              <button class="button2">View</button>
-            </RouterLink>
-          </div>
->>>>>>> Stashed changes -->
+
+    <button
+      id=Terminate
+      @click="terminateContract(this.ContractId, this.PaymentId)"
+      >
+        Terminate Contract
+    </button>
+
+
   </div>
 </template>
 
@@ -69,7 +70,7 @@
 import firebaseApp from "@/firebase.js";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, getDocs, addDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { query, where, collection } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
@@ -211,6 +212,30 @@ export default {
           break;
       }
     },
+
+    // I am only removing from the Contract collection and Payment collections
+    // All existing PaymentHistory documents are left untouched in the database
+    async terminateContract(ContractId, PaymentId) {
+      alert("You are going to terminate thie contract permanently!");
+      await deleteDoc(doc(db, "Contract", ContractId));
+      console.log(
+        "Deleted Contract Document successfully, ContractId is : " + ContractId
+      );
+      await deleteDoc(doc(db, "Payment", PaymentId));
+      console.log(
+        "Deleted Payment Document successfully, PaymentId is : " + PaymentId
+      );
+      // ONLY PROBLEM NOW IS THAT IT DOESN'T REFRESH
+      // Need to update document
+      const propertyRef = doc(db, "Property", this.PropertyId);
+      await updateDoc(propertyRef, {
+        IsRented: false,
+      });
+      console.log("Updated IsRented for PropertyID: " + this.PropertyID)
+      // Router back to Property Page 
+      this.$router.push("/property");
+
+    },
   },
 };
 </script>
@@ -224,7 +249,7 @@ export default {
     "a b b c c d d"
     "a e e e e e e"
     "a e e e e e e"
-    "a g g g g g g";
+    "a g g g h h h";
 }
 
 #Prop {
@@ -253,6 +278,20 @@ export default {
 }
 #Action {
   grid-area: g;
+}
+
+#Terminate {
+  grid-area: h;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border: 2px solid var(--color-border);
+  background-color: maroon;
+  color: white;
 }
 
 .card3 {
