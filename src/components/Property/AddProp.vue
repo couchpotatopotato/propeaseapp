@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <img src="src/components/Property/AddPropImg.jpeg" alt="Card Image" />
+    <img src="@/components/Property/AddPropImg.jpeg" alt="Card Image" />
     <div class="form-group">
       <label for="prop_name">Name:</label>
       <input type="text" id="input1" v-model="prop_name" />
@@ -15,7 +15,6 @@
     <button type="back" class="button2">Back</button>
   </RouterLink>
 </template>
-  0--
 <style scoped>
 .card {
   border: 1px solid #ccc;
@@ -69,9 +68,9 @@ button {
 import firebaseApp from "@/firebase.js";
 import { collection, getFirestore } from "firebase/firestore";
 import { doc, addDoc } from "firebase/firestore";
-import {useToast} from 'vue-toast-notification';
+import { useToast } from "vue-toast-notification";
 import { getAuth } from "firebase/auth";
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+import "vue-toast-notification/dist/theme-bootstrap.css";
 
 const db = getFirestore(firebaseApp);
 
@@ -101,7 +100,7 @@ export default {
   methods: {
     saveCard() {
       if (this.prop_name == "" || this.prop_address == "") {
-        this.$toast.error('Unfilled Fields!');
+        this.$toast.error("Unfilled Fields!");
       } else {
         const card = addDoc(collection(db, "Property"), {
           PropName: this.prop_name,
