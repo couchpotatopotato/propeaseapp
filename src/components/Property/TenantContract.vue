@@ -37,9 +37,9 @@
     <div id="Tenant" class="card3">
       <span class="field">Tenant Information</span> <br />
       <!-- This next tags will later be filled in using innerHTML -->
-      <span id="tenantName" class="info">{{ tenantName }}</span> <br />
-      <span id="tenantEmail" class="field">{{ tenantEmail }}</span> <br />
-      <span id="tenantPhone" class="field">{{ tenantPhone }}</span>
+      <span id="tenantName" class="info">{{ ownerName }}</span> <br />
+      <span id="tenantEmail" class="field">{{ ownerEmail }}</span> <br />
+      <span id="tenantPhone" class="field">{{ ownerPhone }}</span>
     </div>
 
     <button
@@ -78,9 +78,9 @@ export default {
       nextPaymentDueDate: "",
       prevPaymentDueDate: "",
       contractEndDate: "",
-      tenantName: "",
-      tenantEmail: "",
-      tenantPhone: "",
+      ownweName: "",
+      ownerEmail: "",
+      ownerPhone: "",
       buttonTexts: {
         Unpaid: "Click to Pay Rent",
         Overdue: "Click to Pay Overdue Rent",
@@ -152,7 +152,7 @@ export default {
       const contractDocRef = doc(db, "Contract", ContractId);
       const contractDoc = await getDoc(contractDocRef);
       const contractData = contractDoc.data();
-      this.tenantEmail = contractData.TenantEmail;
+      this.ownerEmail = contractData.OwnerEmail;
       this.PaymentId = contractData.PaymentId;
       this.PropertyId = contractData.PropertyId;
       this.nextPaymentAmount = contractData.RentalCost;
@@ -168,12 +168,12 @@ export default {
       const propertyData = propertyDoc.data();
       this.PropAddress = propertyData.PropAddress;
 
-      // Get Tenant Details using TenantEmail
-      const tenantDocRef = doc(db, "Tenant", this.tenantEmail);
-      const tenantDoc = await getDoc(tenantDocRef);
-      const tenantData = tenantDoc.data();
-      this.tenantName = tenantData.Name;
-      this.tenantPhone = tenantData.Phone;
+      // Get Owner Details using OwnerEmail
+      const ownerDocRef = doc(db, "Owner", this.ownerEmail);
+      const ownerDoc = await getDoc(ownerDocRef);
+      const ownerData = ownerDoc.data();
+      this.ownerName = ownerData.Name;
+      this.ownerPhone = ownerData.Phone;
 
       // Get Payment Details using TenantEmail
       const paymentDocRef = doc(db, "Payment", this.PaymentId);
